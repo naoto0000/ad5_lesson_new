@@ -1,0 +1,607 @@
+body{
+    margin: 0;
+    padding: 0;
+}
+
+main{
+    width: 1200px;
+}
+
+h1,h2,p {
+    margin: 0;
+    padding: 0;
+}
+
+a{
+    text-decoration: none;
+}
+
+
+
+header{
+    background-color: black;
+    height: 70px;
+    margin-bottom: 30px;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+h1{
+    color: white;
+    padding-left: 60px;
+}
+
+/* 検索部分 */
+.search{
+    margin-bottom: 30px;
+    margin-left: 60px;
+}
+
+.search label{
+    font-size: 25px;
+    font-weight: bold;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+.search input{
+    height: 35px;
+    margin-right: 20px;
+}
+
+.input_name{
+    width: 230px;
+}
+
+.select_sex{
+    height: 35px;
+    margin-right: 20px; 
+}
+
+.select_sex:hover{
+    cursor: pointer;
+}
+
+.select_branch{
+    height: 35px;
+    margin-right: 20px; 
+}
+
+.select_branch:hover{
+    cursor: pointer;
+}
+
+
+.search_submit{
+    color: white;
+    background-color: #444;
+}
+
+.search_submit:hover{
+    cursor: pointer;
+}
+
+.csv_submit{
+    width: 120px;
+    color: white;
+    background-color: #444;
+}
+
+.csv_submit:hover{
+    cursor: pointer;
+}
+
+
+/* 表示部分 */
+table{
+    margin-left: 60px;
+    border-collapse: collapse;
+    width: 670px;
+}
+
+th,td{
+    border: solid 1px black;
+    margin: 0;
+    height: 40px;
+}
+
+th{
+    background-color: #444;
+    color: white;
+}
+
+td{
+    padding-left: 10px;
+}
+
+.search_none{
+    margin-left: 70px;
+}
+
+
+/* ページネーション関連 */
+
+a.page_number:visited {
+    color: black;
+    text-decoration: none;
+}
+
+.pagenation{
+    display: flex;
+    justify-content: center;
+    margin: 15px;
+}
+
+.page_feed{
+    width: 50px;
+    margin: 0 10px;
+    padding: 5px 10px;
+    text-align: center;
+    background: #b8b8b8;
+    color: black;
+}
+
+.first_last_page{
+    width: 50px;
+    margin: 0 10px;
+    padding: 5px 10px;
+    text-align: center;
+    background: #dddddd;
+    color: black;  
+}
+
+.page_number{
+    width: 30px;
+    margin: 0 10px;
+    padding: 5px 10px;
+    text-align: center;
+    background: #b8b8b8;
+    color: black;  
+}
+
+.now_page_number{
+    width: 30px;
+    margin: 0 10px;
+    padding: 5px 10px;
+    text-align: center;
+    background: #dddddd;
+    color: black;  
+    font-weight: bold;
+}
+
+.from_to {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* 登録画面 */
+.regi_class{
+    width: 100%;
+    height: 100px;
+    margin: 0 0 25px 40px;
+    display: flex;
+    flex-flow: column;
+}
+
+.regi_indi{
+    display: flex;
+    justify-content:left;
+}
+
+.indi_mes{
+    color: red;
+    margin-left: 5px;
+    padding-top: 4px;
+}
+
+.regi_label{
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.regi_name{
+    width: 200px;
+    height: 40px;
+}
+
+.regi_sex{
+    width: 60px;
+    height: 40px;
+}
+
+.regi_birth{
+    width: 200px;
+    height: 40px;
+}
+
+.regi_submit{
+    height: 40px;
+    width: 50px;
+    margin-left: 40px;
+    margin-bottom: 30px;
+    color: white;
+    background-color: #444;
+}
+
+.regi_submit:hover{
+    cursor: pointer;
+}
+
+.indi{
+    color: red;
+}
+
+/* 編集関連 */
+.edit_button{
+    background-color: #444;
+    width: 50px;
+    height: 27px;
+}
+
+.edit_link{
+    color: white;
+}
+
+/* lesson6 */
+.regi_mail{
+    width: 500px;
+    height: 40px; 
+}
+
+.regi_com{
+    width: 100px;
+    height: 40px; 
+}
+
+.regi_blood{
+    display: flex;
+    justify-content:left;
+}
+
+.regi_class_new{
+    width: 100%;
+    height: 100px;
+    margin-left: 40px;
+    display: flex;
+    flex-flow: column;
+}
+
+/* branches関連 */
+/* =========== */
+.regi_branch_class{
+    width: 100%;
+    height: 300px;
+    margin: 0 0 25px 40px;
+    display: flex;
+    flex-flow: column;
+}
+
+.input_branch_name{
+    width: 250px;
+}
+
+.branch_table{
+    width: 650px;
+}
+
+.regi_branch_name{
+    width: 300px;
+    height: 40px;
+}
+
+.regi_pref{
+    width: 120px;
+    height: 40px;
+}
+
+.regi_branch_text{
+    width: 250px;
+    height: 40px;
+}
+
+.regi_city{
+    margin-top: 20px;
+}
+
+.regi_branch {
+    width: 120px;
+    height: 40px;
+}
+
+/* メニュー部分 */
+.menu{
+   display: flex;
+   justify-content: space-between; 
+   background-color: #444;
+   height: 35px;
+}
+
+.menu_class{
+    display: flex;
+}
+
+.menu_class_name{
+    display: flex;
+}
+
+.menu_item{
+    padding-top: 5px;
+    border-right: 1px solid #5c5858 ;
+}
+
+.menu_item:hover{
+    background-color: #5c5858;
+}
+
+.menu_text{
+    color: white;
+    margin: 0 20px;
+}
+
+.menu_name{
+    color: white;
+    margin: 0 20px;
+    padding-top: 5px;
+}
+
+.logout_submit{
+    margin-top: 5px;
+}
+
+.logout_submit:hover{
+    cursor: pointer;
+}
+
+/* 集計画面 */
+
+.emp_total{
+    margin-bottom: 30px;
+}
+
+.total_table{
+    margin-left: 60px;
+    border-collapse: collapse;
+    width: 150px;    
+}
+
+.total_table2{
+    margin-left: 60px;
+    border-collapse: collapse;
+    width: 200px;    
+}
+
+.total_title{
+    margin-left: 60px;
+    margin-bottom: 30px;
+}
+
+.table_title{
+    font-weight: bold;
+}
+
+.total_subtitle{
+    font-weight: bold;
+    text-align: center;
+    padding-left: 0;
+}
+
+.total_count{
+    text-align: right;
+    padding-right: 5px;
+}
+
+/* lesson14 */
+
+.submit_etc{
+    display: flex;
+    justify-content: space-between;
+}
+
+/* lesson 16 */
+.quali_table{
+    width: 360px;
+}
+
+.table_id{
+    padding-left: 0;   
+    width: 50px; 
+    border-right-width: 2px;
+
+}
+
+.table_contents{
+    height: 50px;
+}
+
+.quali_title{
+    text-align: center;
+}
+
+.quali_table_name{
+    padding-left: 0;
+}
+
+.quali_input{
+    width: 280px;
+    height: 35px;
+}
+
+.quali_id{
+    font-weight: bold;
+}
+
+.quali_submit{
+    margin: 30px 0 0 60px;
+}
+
+/* lesson 18 */
+
+.regi_pass{
+    width: 200px;
+    height: 40px; 
+}
+
+/* lesson19 ログイン関連 */
+
+.login{
+    height: 100px;
+    margin: 0 0 25px 40px;
+    display: flex;
+    flex-flow: column;
+}
+
+.login_label{
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.login_mail{
+    width: 500px;
+    height: 40px;
+}
+
+.login_pass{
+    width: 140px;
+    height: 40px;
+}
+
+.login_submit{
+    height: 40px;
+    width: 70px;
+    margin-left: 40px;
+    margin-bottom: 30px;
+    color: white;
+    background-color: #444;
+}
+
+.login_submit:hover{
+    cursor: pointer;
+}
+
+/* 目のマーク実装 */
+#eye {
+    display: flex;
+    align-items: center;
+    width: 25px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.login_pass_class{
+    display: flex;
+    justify-content:left;
+}
+
+
+/* lesson21 */
+
+.csv_import{
+    margin: 50px 0 0 60px;
+}
+
+.csv_import_submit{
+    width: 120px;
+    height: 35px;
+    color: white;
+    background-color: #444;
+    margin-left: 20px;
+}
+
+/* lesson22 */
+
+.prof_table{
+    width: 400px;
+}
+
+.prof_title{
+    font-weight: bold;
+}
+
+.prof_list{
+    text-align: center;
+    padding-left: 0;
+}
+
+.img_area{
+    width: 300px;
+    height: 300px;
+    margin: 0 0 20px 40px;
+}
+
+.prof_img{
+    margin: 30px 0 0 60px;
+}
+
+.prof_text{
+    margin: 30px 0 0 60px;
+}
+
+.prof_img_input{
+    display: flex;
+    flex-direction: column;
+    margin-left: 40px;
+}
+
+.prof_contents{
+    margin-bottom: 10px;
+}
+
+.prof_contents_title{
+    margin-bottom: 10px;
+}
+
+.prof_textarea{
+    margin-left: 40px;
+}
+
+.prof_submit{
+    height: 40px;
+    width: 50px;
+    margin: 30px 0 30px 60px;
+    color: white;
+    background-color: #444;
+}
+
+.prof_submit:hover{
+    cursor: pointer;
+}
+
+/* lesson23 詳細画面 */
+
+.detail_class{
+    display: flex;
+    margin-top: 50px;
+}
+
+.detail_img{
+    width: 400px;
+    height: 400px;
+    margin-left: 60px;
+}
+
+.detail_contents{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-left: 30px;
+    padding: 15px 20px 15px 20px;
+    border-bottom: solid 1px #7c7c7c;
+}
+
+
+.detail_contents:first-child{
+    border-top: solid 1px #7c7c7c;
+}
+
+.detail_title{
+    width: 100px;
+    text-align: left;
+}
+
+.detail_text{
+    margin-left: 60px;
+    font-size: 20px;
+}
