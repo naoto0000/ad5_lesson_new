@@ -1,3 +1,5 @@
+
+/* 共通部分 */
 body{
     margin: 0;
     padding: 0;
@@ -30,6 +32,50 @@ header{
 h1{
     color: white;
     padding-left: 60px;
+}
+
+/* メニュー部分 */
+.menu{
+    display: flex;
+    justify-content: space-between; 
+    background-color: #444;
+    height: 35px;
+}
+ 
+.menu_class{
+    display: flex;
+}
+ 
+.menu_class_name{
+    display: flex;
+}
+ 
+.menu_item{
+    padding-top: 5px;
+    border-right: 1px solid #5c5858 ;
+}
+ 
+.menu_item:hover{
+    background-color: #5c5858;
+}
+ 
+.menu_text{
+    color: white;
+    margin: 0 20px;
+}
+ 
+.menu_name{
+    color: white;
+    margin: 0 20px;
+    padding-top: 5px;
+}
+ 
+.logout_submit{
+    margin-top: 5px;
+}
+ 
+.logout_submit:hover{
+    cursor: pointer;
 }
 
 /* 検索部分 */
@@ -93,16 +139,17 @@ h1{
 }
 
 
-/* 表示部分 */
+/* 一覧表示部分 */
 table{
     margin-left: 60px;
     border-collapse: collapse;
-    width: 670px;
 }
 
 th,td{
     border: solid 1px black;
     margin: 0;
+    padding-left: 10px;
+    padding-right: 10px;
     height: 40px;
 }
 
@@ -216,6 +263,26 @@ a.page_number:visited {
     height: 40px;
 }
 
+.regi_mail{
+    width: 500px;
+    height: 40px; 
+}
+
+.regi_com{
+    width: 100px;
+    height: 40px; 
+}
+
+.regi_blood{
+    display: flex;
+    justify-content:left;
+}
+
+.regi_pass{
+    width: 200px;
+    height: 40px; 
+}
+
 .regi_submit{
     height: 40px;
     width: 50px;
@@ -240,36 +307,16 @@ a.page_number:visited {
     height: 27px;
 }
 
+.submit_etc{
+    display: flex;
+    justify-content: space-between;
+}
+
 .edit_link{
     color: white;
 }
 
-/* lesson6 */
-.regi_mail{
-    width: 500px;
-    height: 40px; 
-}
-
-.regi_com{
-    width: 100px;
-    height: 40px; 
-}
-
-.regi_blood{
-    display: flex;
-    justify-content:left;
-}
-
-.regi_class_new{
-    width: 100%;
-    height: 100px;
-    margin-left: 40px;
-    display: flex;
-    flex-flow: column;
-}
-
 /* branches関連 */
-/* =========== */
 .regi_branch_class{
     width: 100%;
     height: 300px;
@@ -283,7 +330,11 @@ a.page_number:visited {
 }
 
 .branch_table{
-    width: 650px;
+    width: 750px;
+}
+
+.branch_edit_button{
+    text-align: center;
 }
 
 .regi_branch_name{
@@ -308,50 +359,6 @@ a.page_number:visited {
 .regi_branch {
     width: 120px;
     height: 40px;
-}
-
-/* メニュー部分 */
-.menu{
-   display: flex;
-   justify-content: space-between; 
-   background-color: #444;
-   height: 35px;
-}
-
-.menu_class{
-    display: flex;
-}
-
-.menu_class_name{
-    display: flex;
-}
-
-.menu_item{
-    padding-top: 5px;
-    border-right: 1px solid #5c5858 ;
-}
-
-.menu_item:hover{
-    background-color: #5c5858;
-}
-
-.menu_text{
-    color: white;
-    margin: 0 20px;
-}
-
-.menu_name{
-    color: white;
-    margin: 0 20px;
-    padding-top: 5px;
-}
-
-.logout_submit{
-    margin-top: 5px;
-}
-
-.logout_submit:hover{
-    cursor: pointer;
 }
 
 /* 集計画面 */
@@ -385,27 +392,20 @@ a.page_number:visited {
     font-weight: bold;
     text-align: center;
     padding-left: 0;
+    padding-right: 0;
 }
 
 .total_count{
     text-align: right;
-    padding-right: 5px;
+    padding-right: 10px;
 }
 
-/* lesson14 */
-
-.submit_etc{
-    display: flex;
-    justify-content: space-between;
-}
-
-/* lesson 16 */
+/* 資格マスタ */
 .quali_table{
     width: 360px;
 }
 
 .table_id{
-    padding-left: 0;   
     width: 50px; 
     border-right-width: 2px;
 
@@ -417,10 +417,6 @@ a.page_number:visited {
 
 .quali_title{
     text-align: center;
-}
-
-.quali_table_name{
-    padding-left: 0;
 }
 
 .quali_input{
@@ -436,14 +432,7 @@ a.page_number:visited {
     margin: 30px 0 0 60px;
 }
 
-/* lesson 18 */
-
-.regi_pass{
-    width: 200px;
-    height: 40px; 
-}
-
-/* lesson19 ログイン関連 */
+/* ログイン関連 */
 
 .login{
     height: 100px;
@@ -481,6 +470,19 @@ a.page_number:visited {
     cursor: pointer;
 }
 
+.new_regi_text{
+    margin-left: 30px;
+}
+
+.new_regi_a{
+    text-decoration: underline;
+}
+
+.ok_regi{
+    margin-left: 40px;
+    margin-top: 50px;
+}
+
 /* 目のマーク実装 */
 #eye {
     display: flex;
@@ -496,7 +498,7 @@ a.page_number:visited {
 }
 
 
-/* lesson21 */
+/* csv関連 */
 
 .csv_import{
     margin: 50px 0 0 60px;
@@ -510,7 +512,11 @@ a.page_number:visited {
     margin-left: 20px;
 }
 
-/* lesson22 */
+.import_text{
+    margin: 50px 0 0 60px;
+}
+
+/* プロフィール画面 */
 
 .prof_table{
     width: 400px;
@@ -522,7 +528,7 @@ a.page_number:visited {
 
 .prof_list{
     text-align: center;
-    padding-left: 0;
+    padding: 0;
 }
 
 .img_area{
@@ -569,7 +575,7 @@ a.page_number:visited {
     cursor: pointer;
 }
 
-/* lesson23 詳細画面 */
+/* 詳細画面 */
 
 .detail_class{
     display: flex;
@@ -582,6 +588,24 @@ a.page_number:visited {
     margin-left: 60px;
 }
 
+.detail_img_man{
+    width: 400px;
+    height: 400px;
+    margin-left: 60px;
+    border-color: blue;
+    border-width: 5px;
+    border-style: solid;
+}
+
+.detail_img_woman{
+    width: 400px;
+    height: 400px;
+    margin-left: 60px;
+    border-color: red;
+    border-width: 5px;
+    border-style: solid;
+}
+
 .detail_contents{
     display: flex;
     justify-content: left;
@@ -589,6 +613,11 @@ a.page_number:visited {
     margin-left: 30px;
     padding: 15px 20px 15px 20px;
     border-bottom: solid 1px #7c7c7c;
+}
+
+.detail_quali{
+    flex-direction: column;
+    display: flex;
 }
 
 
@@ -605,3 +634,84 @@ a.page_number:visited {
     margin-left: 60px;
     font-size: 20px;
 }
+
+/* Lesson24 部門関連 */
+
+/* .regi_group_order{
+    width: 120px;
+    height: 40px;
+}
+
+/* lesson25 */
+
+/* .group_class_edit{
+    margin-top: 30px;
+}
+
+.group_class_submit{
+    height: 40px;
+    width: 50px;
+    margin: 20px 0 30px 60px;
+    color: white;
+    background-color: #444;
+}
+
+.group_class_submit:hover{
+    cursor: pointer;
+}
+
+
+.group_td{
+    border: solid 1px black;
+    margin: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+    height: 50px;
+}
+
+.group_input_name{
+    height: 40px;
+    width: 100px;
+}
+
+.group_date{
+    height: 40px;
+    width: 250px; 
+}
+
+/* lesson26 */
+
+/* .group_count{
+    text-align: right;
+}
+
+.group_disp{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 100px;
+}
+
+.group_class_disp{
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    margin-left: 60px;
+    padding: 15px 20px 15px 20px;
+    border-bottom: solid 1px #7c7c7c;
+    width: 500px;
+}
+
+.group_class_disp:first-child{
+    border-top: solid 1px #7c7c7c;
+}
+
+
+.group_disp_title{
+    margin: 30px 0 20px 60px;
+}
+
+.detail_title_p{
+    font-size: 20px;
+    width: 100px;
+    text-align: left;
+} */

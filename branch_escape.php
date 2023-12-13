@@ -22,10 +22,9 @@ $full_address = $pref_codes[$prefectures] . $branch['address'] . $branch['addres
 <td><?php echo htmlspecialchars($branch['branch_name'], ENT_QUOTES); ?></td>
 <td><?php echo htmlspecialchars($branch['tel_number'], ENT_QUOTES); ?></td>
 <td><?php echo htmlspecialchars($full_address, ENT_QUOTES);?></td>
-<td><button name="edit_button" class="edit_button">
+<td class="branch_edit_button"><button name="edit_button" class="edit_button">
     <a href="branch_edit.php?id=<?php echo htmlspecialchars($branch['id'], ENT_QUOTES) ?>" class="edit_link">編集</a>
 </button></td>
 </tr>
-
 
 <?php endforeach; ?>

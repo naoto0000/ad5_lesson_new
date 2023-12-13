@@ -1,25 +1,22 @@
+
 <?php foreach ($employees as $employee) : ?>
 
 <?php
-
-foreach ($branch_row as $branch_name_row){
-    if ($employee['branch_id'] === $branch_name_row['id']) {
-        $branch_text = $branch_name_row['branch_name'];
-    } elseif ($employee['branch_id'] == "") {
-        $branch_text = "";
-    }
-}
  
-
     // 現在日付
     $now = date('Ymd');
 
-    // 誕生日
-    $birthday = $employee['birthdate'] ;
-    $birthday = str_replace("-", "", $birthday);
+    if ($employee['birthdate'] !== null) {
+        // 誕生日
+        $birthday = $employee['birthdate'] ;
+        $birthday = str_replace("-", "", $birthday);
 
-    // 年齢
-    $age = floor(($now - $birthday) / 10000);
+        // 年齢
+        $age = floor(($now - $birthday) / 10000);
+
+    } else {
+        $age = "";
+    }
 
     // 性別
     $sex = $employee['sex'];
@@ -36,7 +33,7 @@ foreach ($branch_row as $branch_name_row){
 <tr class="table_contents">
     <td><?php echo htmlspecialchars($employee['name'], ENT_QUOTES); ?></td>
     <td><?php echo htmlspecialchars($employee['kana'], ENT_QUOTES); ?></td>
-    <td><?php echo htmlspecialchars($branch_text, ENT_QUOTES); ?></td>
+    <td><?php echo htmlspecialchars($employee['branch_name'], ENT_QUOTES); ?></td>
     <td><?php echo htmlspecialchars($sex, ENT_QUOTES);?></td>
     <td><?php echo htmlspecialchars($age, ENT_QUOTES); ?></td>
     <td><?php echo htmlspecialchars($employee['birthdate'], ENT_QUOTES); ?></td>

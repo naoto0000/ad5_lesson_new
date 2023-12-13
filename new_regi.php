@@ -3,8 +3,6 @@
 
 require_once('function.php');
 
-require_once('not_login.php');
-
 $_POST['regi_mail'] == "";
 
 // lesson15追加課題
@@ -56,7 +54,7 @@ $regi_com_int = (int)$_POST['regi_com'];
         
                 $stmt->execute();
         
-                echo "登録しました";
+                header('Location: ok_regi.php');
 
                 }catch(PDOException $e){
                 echo $e->getMessage();
@@ -86,10 +84,8 @@ $_SESSION["token"] = $token = mt_rand();
 
 <?php require_once('header.html'); ?>
 
-<?php require_once('menu.php');?>
-
 <header>
-    <h1>社員登録</h1>
+    <h1>新規登録</h1>
 </header>
 
 <main>

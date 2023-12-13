@@ -2,18 +2,14 @@
 <?php 
 require_once('function.php');
 
-
-// lesson19 ログインしてない時の処理
-if (empty($_SESSION['id'])) {
-    header('Location: login.php');
-}
+require_once('not_login.php');
 
 $total_sex_sql = "SELECT * FROM `employees` WHERE delete_flg IS NULL";
 $employees_total = $pdo->query($total_sex_sql);
 
-$man = "";
-$woman = "";
-$unknown = "";
+$man = 0;
+$woman = 0;
+$unknown = 0;
 
 foreach ($employees_total as $emp_sex) {
     if ($emp_sex['sex'] == 1) {
@@ -27,25 +23,30 @@ foreach ($employees_total as $emp_sex) {
 
 $total_sex = $man + $woman + $unknown;
 
+// 支店集計
+// ＝＝＝＝
+$total_branch_sql =
+"SELECT
+b.branch_name as branch_name,
+COUNT(e.branch_id) as emp_count
+FROM
+employees as e
+INNER JOIN
+branches as b
+ON
+e.branch_id = b.id
+WHERE delete_flg IS NULL
+GROUP BY
+e.branch_id
+ORDER BY b.order_list";
 
-
-$total_branch_sql = "SELECT * FROM `branches` ORDER BY order_list";
 $branches_total = $pdo->query($total_branch_sql);
 
-
+$branches_total_row = $branches_total->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD5 lesson</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css">
-</head>
-<body>
+<?php require_once('header.html'); ?>
 
 <?php require_once('menu.php');?>
 
@@ -94,22 +95,14 @@ $branches_total = $pdo->query($total_branch_sql);
                 <th>社員数</th>
             </tr>
 
-                <?php foreach ($branches_total as $emp_branch): ?>
+                <?php foreach ($branches_total_row as $branches_total): ?>
                     <tr class="table_contents">
-                        <td class="total_subtitle"><?php echo htmlspecialchars($emp_branch['branch_name'], ENT_QUOTES); ?></td>
-                        <td class="total_count"><?php echo 1; ?></td>
+                        <td class="total_subtitle"><?php echo htmlspecialchars($branches_total['branch_name'], ENT_QUOTES); ?></td>
+                        <td class="total_count"><?php echo $branches_total['emp_count']; ?></td>
                     </tr>
                 <?php endforeach; ?>
         </table>
-
-
     </div>
-
-
 </main>
-
-
-
-
 </body>
 </html>

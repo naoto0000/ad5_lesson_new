@@ -3,9 +3,7 @@
 
 require_once('function.php');
 
-
 // $_SESSION['access'] == "";
-
 
 $login_mail = $_POST['login_mail'];
 $login_pass = $_POST['login_pass'];
@@ -26,7 +24,6 @@ if (isset($_POST['login_submit'])) {
         $_SESSION['img'] = $login_result['image'];
         $_SESSION['prof_text'] = $login_result['prof_text'];
 
-
         // 現在日付
         $now = date('Ymd');
 
@@ -38,9 +35,6 @@ if (isset($_POST['login_submit'])) {
 
         // 年齢
         $_SESSION['age'] = floor(($now - $birthday_login) / 10000);
-
-
-
 
         // if ( $_SESSION['access'] == "on") {
         //     $backURL = $_SERVER['HTTP_REFERER'];
@@ -55,23 +49,12 @@ if (isset($_POST['login_submit'])) {
         echo "メールアドレスもしくはパスワードが間違っています";
     }
 }
-
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD5 lesson</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha512-KfkfwYDsLkIlwQp6LFnl8zNdLGxu9YAA1QvwINks4PhcElQSvqcyVLLD9aMhXd13uQjoXtEKNosOWaZqXgel0g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
+<?php require_once('header.html'); ?>
+
 <header>
     <h1>ログイン</h1>
-
 </header>
 
 <main>
@@ -92,8 +75,9 @@ if (isset($_POST['login_submit'])) {
 
     <input type="submit" name="login_submit" value="ログイン" class="login_submit">
 
-
 </form>
+
+    <p class="new_regi_text">新規登録の方は<a href="new_regi.php" class="new_regi_a">こちら</a></p>
 
     <script>
           let eye = document.getElementById("eye");
@@ -111,7 +95,5 @@ if (isset($_POST['login_submit'])) {
      </script>
 
 </main>
-
-
 </body>
 </html>

@@ -1,13 +1,9 @@
+
 <?php
 
 require_once('function.php');
 
-
-// lesson19 ログインしてない時の処理
-if (empty($_SESSION['id'])) {
-    header('Location: login.php');
-}
-
+require_once('not_login.php');
 
 if (isset($_GET['page'])) {
     $page = $_GET['page'];
@@ -70,16 +66,8 @@ $sexCotegory = [
 $pdo = null;
 
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD5 lesson</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css">
-</head>
-<body>
+
+<?php require_once('header.html'); ?>
 
 <?php require_once('menu.php');?>
 

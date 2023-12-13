@@ -1,36 +1,23 @@
+
 <?php
 require_once('function.php');
 
-// lesson19 ログインしてない時の処理
-if (empty($_SESSION['id'])) {
-    header('Location: login.php');
-}
-
+require_once('not_login.php');
 
 // データ取得のための変数
 $count_sql = "SELECT COUNT(*) as cnt FROM employees WHERE delete_flg IS NULL";
 
-// ページ数を取得する。GETでページが渡ってこなかった時（最初のページ）は$pageに１を格納する。
-if (isset($_GET['page'])) {
-    $page = $_GET['page'];
-} else {
-    $page = 1;
-}
-
-$counts = $pdo -> query($count_sql);
-$count = $counts -> fetch(PDO::FETCH_ASSOC);
+require_once('page_get.php');
 
 require_once('page_gene.php');
 
 // 取得データを５件のみ表示
-$base_sql = "SELECT * FROM `employees` WHERE delete_flg IS NULL LIMIT {$start},5";
+$base_sql = "SELECT e.*, b.branch_name FROM employees AS e INNER JOIN branches AS b ON e.branch_id = b.id WHERE delete_flg IS NULL LIMIT {$start},5";
 $employees = $pdo->query($base_sql);
 
 require_once('branch_get.php');
 
-$branch_text = "";
-
-// lesson14 削除メッセージ表示
+// 削除メッセージ表示
 $delete_msg = $_GET['delete_msg'];
 
 if ($delete_msg == 1) {
@@ -38,17 +25,7 @@ if ($delete_msg == 1) {
 }
 
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD5 lesson</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css">
-</head>
-<body>
+<?php require_once('header.html'); ?>
 
 <?php require_once('menu.php');?>
 
@@ -86,6 +63,8 @@ if ($delete_msg == 1) {
             <input type="submit" name="search_submit" value="検索" class="search_submit">
 
             <input type="submit" name="csv_submit" value="CSVダウンロード" class="csv_submit">
+            
+            <a href="csv_import.php"><input type="button" name="csv_import" value="CSVインポート" class="csv_submit"></a>
 
         </form>
 

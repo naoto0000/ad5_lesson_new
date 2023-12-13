@@ -1,5 +1,5 @@
-<?php 
 
+<?php 
 $validate_mes = [];
 
 function validate($post_data) {
@@ -9,5 +9,4 @@ function validate($post_data) {
         $validate_mes['edit_com'] = '1以上の整数で入力ください';
     }
 }
-
 ?>

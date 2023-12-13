@@ -3,71 +3,91 @@
 
 require_once('function.php');
 
-$quali_get_sql = "SELECT * FROM `quali`";
-$quali_masta = $pdo->query($quali_get_sql);
+require_once('not_login.php');
+
+require_once('quali_get.php');
 
 if ($_POST['quali_submit']) {
-    if ($_POST['quali_new'] !== "") {
-        $quali_insert_sql = 'INSERT INTO quali (quali_name) VALUES (:quali_name)';
+    if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
+
+        // 新規登録の場合
+        if ($_POST['quali_new'] !== "") {
+            $quali_insert_sql = 'INSERT INTO quali (quali_name) VALUES (:quali_name)';
+                
+            try{
+            $quali_stmt = $pdo->prepare($quali_insert_sql);
+            $quali_stmt->bindValue(':quali_name',$_POST['quali_new'],PDO::PARAM_STR);
+            $quali_stmt->execute();
+
+            echo "登録しました";
+
+            }catch(PDOException $e){
+            echo $e->getMessage();
+            }
+
+        } 
+
+        $qualis = $_POST['quali'];
+
+        foreach ($qualis as $quali) {
+            if ($quali['quali_name'] === "") {
+
+                try {
+                    $pdo->beginTransaction();
+
+                    $quali_delete_sql = "DELETE FROM quali WHERE id = :id";
             
-        try{
-        $quali_stmt = $pdo->prepare($quali_insert_sql);
-        $quali_stmt->bindValue(':quali_name',$_POST['quali_new'],PDO::PARAM_STR);
-        $quali_stmt->execute();
+                    $quali_delete_stmt = $pdo->prepare($quali_delete_sql);
+                    $quali_delete_stmt->bindValue(':id',$quali['id'],PDO::PARAM_INT);
+            
+                    $quali_delete_stmt->execute();
 
-        echo "登録しました";
-
-        }catch(PDOException $e){
-        echo $e->getMessage();
-        }
-
-    } elseif ($_POST['quali_edit'] == "") {
-        $quali_delete_sql = "DELETE FROM quali WHERE id = :id";
-
-        $quali_delete_stmt = $pdo->prepare($quali_delete_sql);
-        $quali_delete_stmt->bindValue(':id',$_POST['quali_id'],PDO::PARAM_INT);
-
-        $quali_delete_stmt->execute();
-
-        echo "削除しました";
-
-    } else {
-        $quali_edit_sql = "UPDATE quali 
-        SET quali_name = :quali_name WHERE id = :id";
-
-        try{
-        $quali_edit_stmt = $pdo->prepare($quali_edit_sql);
-        $quali_edit_stmt->bindValue(':id',$_POST['quali_id'],PDO::PARAM_INT);
-        $quali_edit_stmt->bindValue(':quali_name',$_POST['quali_edit'],PDO::PARAM_STR);
-        $quali_edit_stmt->execute();
-    
-        echo "更新しました";
-
-        }catch(PDOException $e){
-        echo $e->getMessage();
+                    // エスケープ処理
+                    $quali_id = htmlspecialchars($quali['id'], ENT_QUOTES);
+            
+                    $delete_sql = 
+                    "UPDATE employees SET quali = TRIM(BOTH ',' FROM REPLACE (CONCAT (',' , quali , ',' ), ',$quali_id,' , ',')) WHERE quali LIKE '%$quali_id%' AND delete_flg IS NULL";
+            
+                    $delete_stmt = $pdo->prepare($delete_sql);
+                    $delete_stmt->execute();
+        
+                    $pdo->commit();
+            
+                } catch(Exception $e){
+                    $pdo->rollBack();
+                }
+                // echo "削除しました";
+        
+            } else {
+                $quali_edit_sql = "UPDATE quali 
+                SET quali_name = :quali_name WHERE id = :id";
+        
+                try{
+                $quali_edit_stmt = $pdo->prepare($quali_edit_sql);
+                $quali_edit_stmt->bindValue(':id',$quali['id'],PDO::PARAM_STR);
+                $quali_edit_stmt->bindValue(':quali_name',$quali['quali_name'],PDO::PARAM_STR);
+                $quali_edit_stmt->execute();
+            
+                // echo "更新しました";
+        
+                }catch(PDOException $e){
+                echo $e->getMessage();
+                }
+            }
         }
     }
 }
 
-
+//トークンをセッション変数にセット
+$_SESSION["token"] = $token = mt_rand();
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD5 lesson</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css">
-</head>
-<body>
+<?php require_once('header.html'); ?>
 
 <?php require_once('menu.php');?>
 
 <header>
     <h1>資格マスタ</h1>
-
 </header>
 
 <main>
@@ -81,11 +101,11 @@ if ($_POST['quali_submit']) {
                     <th class="quali_table_name">資格名</th>
                 </tr>
 
-            <?php foreach ($quali_masta as $quali) : ?>
+            <?php foreach ($quali_masta as $index => $quali) : ?>
                 <tr class="table_contents  quali_title">
-                    <input type="hidden" name="quali_id" value="<?php echo $quali['id']; ?>">
+                    <input type="hidden" name="quali[<?php echo $index ?>][id]" value="<?php echo $quali['id']; ?>">
                     <td class="table_id quali_id"><?php echo $quali['id']; ?></td>
-                    <td class="quali_table_name"><input type="text" name="quali_edit" value="<?php echo $quali['quali_name']; ?>" class="quali_input"></td>
+                    <td class="quali_table_name"><input type="text" name="quali[<?php echo $index ?>][quali_name]" value="<?php echo $quali['quali_name']; ?>" class="quali_input"></td>
                 </tr>
             <?php endforeach ; ?>
 
@@ -94,19 +114,15 @@ if ($_POST['quali_submit']) {
                     <td class="quali_table_name"><input type="text" name="quali_new" value="" class="quali_input"></td>
                 </tr>
 
-
-
             </table>
         </div>
 
-        <input type="submit" name="quali_submit" value="保存" class="regi_submit quali_submit">
+        <input type="hidden" name="token" value="<?php echo $token;?>">
 
+        <input type="submit" name="quali_submit" value="保存" class="regi_submit quali_submit">
 
     </form>    
 
-
 </main>
-
-
 </body>
 </html>

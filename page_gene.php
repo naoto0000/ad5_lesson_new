@@ -1,3 +1,4 @@
+
 <?php
 $max_page = ceil($count['cnt'] / 5);
 
@@ -26,5 +27,4 @@ if ($page > 1) {
 }
 
 $search_count = $count['cnt'];
-
 ?>

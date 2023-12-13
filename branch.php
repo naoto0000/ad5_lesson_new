@@ -1,23 +1,12 @@
+
 <?php 
 require_once('function.php');
-// lesson19 ログインしてない時の処理
-if (empty($_SESSION['id'])) {
-    header('Location: login.php');
-}
-
+require_once('not_login.php');
 
 // データ取得のための変数
 $count_sql = 'SELECT COUNT(*) as cnt FROM branches';
 
-// ページ数を取得する。GETでページが渡ってこなかった時（最初のページ）は$pageに１を格納する。
-if (isset($_GET['page'])) {
-    $page = $_GET['page'];
-} else {
-    $page = 1;
-}
-
-$counts = $pdo -> query($count_sql);
-$count = $counts -> fetch(PDO::FETCH_ASSOC);
+require_once('page_get.php');
 
 require_once('page_gene.php');
 
@@ -26,22 +15,12 @@ $base_sql = "SELECT * FROM `branches` ORDER BY order_list LIMIT {$start},5";
 $branches = $pdo->query($base_sql);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AD5 lesson</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.9.0/slick.min.css">
-</head>
-<body>
+<?php require_once('header.html'); ?>
 
 <?php require_once('menu.php');?>
 
 <header>
     <h1>支店一覧</h1>
-
 </header>
 
 <main>

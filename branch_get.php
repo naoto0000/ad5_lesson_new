@@ -11,5 +11,4 @@ try{
 
 // 取得できたデータを変数に入れておく
 $branch_row = $branch_stmt->fetchAll(PDO::FETCH_ASSOC);
-
 ?>

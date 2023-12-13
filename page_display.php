@@ -1,4 +1,4 @@
-    
+        
     <!-- ここからページネーション設定 -->
     <p class="from_to"><?php echo $search_count ?>件中 <?php echo $from_record; ?> - <?php echo $to_record; ?> 件目を表示</p>
 
