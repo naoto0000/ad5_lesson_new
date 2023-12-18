@@ -1,9 +1,14 @@
 
 <?php 
-$now_url = $_SERVER['REQUEST_URI'];
 
 // lesson19 ログインしてない時の処理
 if (empty($_SESSION['id'])) {
-    header('Location: login.php?referrer=' . urlencode($now_url));
+
+    session_start();
+
+    // 現在のURLを保存
+    $_SESSION['redirect_url'] = $_SERVER['REQUEST_URI'];
+
+    header('Location: login.php');
 }
 ?>

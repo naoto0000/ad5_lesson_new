@@ -33,7 +33,8 @@ $tel_result = preg_match('/^0[0-9]{1,4}-[0-9]{1,4}-[0-9]{3,4}\z/', $_POST['edit_
         
                 $stmt->execute();
             
-                echo "更新しました";
+                $_SESSION['message'] = 1;
+                header("Location: branch.php");
         
                 }catch(PDOException $e){
                 echo $e->getMessage();

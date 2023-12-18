@@ -1,51 +1,62 @@
-
-<?php foreach ($employees as $employee) : ?>
-
 <?php
- 
-    // 現在日付
-    $now = date('Ymd');
+    // /**
+    //  * 生年月日から年齢を算出
+    //  *
+    //  * @param string|null $birthday
+    //  * @return float|null
+    //  */
+    // function ageFromBirthday(?string $birthday): ?float
+    // {
+    //     if ($birthday === null) {
+    //         return null;
+    //     }
 
-    if ($employee['birthdate'] !== null) {
-        // 誕生日
-        $birthday = $employee['birthdate'] ;
-        $birthday = str_replace("-", "", $birthday);
+    //     $birthday = str_replace("-", "", $birthday);
+    //     $age = floor((date('Ymd') - $birthday) / 10000);
+    //     if ($age === false) {
+    //         return null;
+    //     }
 
-        // 年齢
-        $age = floor(($now - $birthday) / 10000);
+    //     return $age;
+    // }
+    
+    // /**
+    //  * 性別ラベル表示
+    //  *
+    //  * @param string $sex
+    //  * @return string
+    //  */
+    // function sexLabel(string $sex): string
+    // {
+    //     $int_sex = (int)$sex;
 
-    } else {
-        $age = "";
-    }
+    //     if ($int_sex === 1) {
+    //         return '男';
+    //     }
 
-    // 性別
-    $sex = $employee['sex'];
+    //     if ($int_sex === 2) {
+    //         return '女';
+    //     }
 
-    if ($sex === '1') {
-        $sex = '男';
-    } elseif ($sex === '2') {
-        $sex = '女';
-    } elseif ($sex === '3') {
-        $sex = '不明';
-    }
+    //     return '不明';
+    // }
 ?>
-
+<?php foreach ($employees as $employee) : ?>
 <tr class="table_contents">
-    <td><?php echo htmlspecialchars($employee['name'], ENT_QUOTES); ?></td>
-    <td><?php echo htmlspecialchars($employee['kana'], ENT_QUOTES); ?></td>
-    <td><?php echo htmlspecialchars($employee['branch_name'], ENT_QUOTES); ?></td>
-    <td><?php echo htmlspecialchars($sex, ENT_QUOTES);?></td>
-    <td><?php echo htmlspecialchars($age, ENT_QUOTES); ?></td>
-    <td><?php echo htmlspecialchars($employee['birthdate'], ENT_QUOTES); ?></td>
+    <td><?php e($employee->name); ?></td>
+    <td><?php e($employee->kana); ?></td>
+    <td><?php e($employee->branch_name); ?></td>
+    <td><?php e($employee->sex_label); ?></td>
+    <td><?php e($employee->age); ?></td>
+    <td><?php e($employee->birthdate); ?></td>
     <td>
         <button name="edit_button" class="edit_button">
-            <a href="edit.php?id=<?php echo htmlspecialchars($employee['id'], ENT_QUOTES) ?>" class="edit_link">編集</a>
+            <a href="edit.php?id=<?php e($employee->id) ?>" class="edit_link">編集</a>
         </button>
 
         <button name="detail_button" class="edit_button">
-            <a href="detail.php?id=<?php echo htmlspecialchars($employee['id'], ENT_QUOTES) ?>" class="edit_link">詳細</a>
+            <a href="detail.php?id=<?php e($employee->id) ?>" class="edit_link">詳細</a>
         </button>
     </td>
 </tr>
-
 <?php endforeach; ?>

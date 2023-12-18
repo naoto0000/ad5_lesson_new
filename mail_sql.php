@@ -1,6 +1,11 @@
 
 <?php 
-// lesson18 メールアドレスのデータ取得
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=ad5_new', "root", "root");
+} catch (PDOException $e) {
+    echo $e->getMessage();
+}
+
 // 削除された人のメアドを使えるようにしている
 try{
     $mail_sql = "SELECT email FROM employees WHERE delete_flg IS NULL";

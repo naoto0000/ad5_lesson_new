@@ -13,6 +13,12 @@ require_once('page_gene.php');
 // 取得データを５件のみ表示
 $base_sql = "SELECT * FROM `branches` ORDER BY order_list LIMIT {$start},5";
 $branches = $pdo->query($base_sql);
+
+// 編集メッセージ表示
+if ($_SESSION['message'] === 1) {
+    echo "更新しました";
+    $_SESSION['message'] = "";
+}
 ?>
 
 <?php require_once('header.html'); ?>

@@ -3,8 +3,6 @@
 
 require_once('function.php');
 
-// $_SESSION['access'] == "";
-
 $login_mail = $_POST['login_mail'];
 $login_pass = $_POST['login_pass'];
 
@@ -36,14 +34,17 @@ if (isset($_POST['login_submit'])) {
         // 年齢
         $_SESSION['age'] = floor(($now - $birthday_login) / 10000);
 
-        // if ( $_SESSION['access'] == "on") {
-        //     $backURL = $_SERVER['HTTP_REFERER'];
-        //     header("Location: .'$backURL'");
-        // } else {
-        //     header('Location: index.php');
-        // }
-
-        header('Location: index.php');
+        // 保存されたURLがあればそこにリダイレクト
+        if (isset($_SESSION['redirect_url'])) {
+            $redirect_url = $_SESSION['redirect_url'];
+            unset($_SESSION['redirect_url']); // 一度使用したら削除しておく
+            header("Location: $redirect_url");
+            exit;
+        } else {
+            // 保存されたURLがない場合、デフォルトのページにリダイレクト
+            header("Location: index.php");
+            exit;
+        }
 
     } else {
         echo "メールアドレスもしくはパスワードが間違っています";

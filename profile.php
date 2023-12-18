@@ -8,6 +8,7 @@ require_once('not_login.php');
 $prof_sql = "SELECT * FROM `employees` WHERE delete_flg IS NULL";
 $prof = $pdo->query($prof_sql);
 
+// TODO whereで現在のログインユーザのidで絞り込む
 foreach ($prof as $prof_row) {
     if ($_SESSION['id'] == $prof_row['id']) {
         $prof_birthdate_get = $prof_row['birthdate'];
@@ -31,89 +32,55 @@ $prof_age = floor(($now - $birthday_age) / 10000);
 if ($_POST['prof_submit']) {
     if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
 
-        if ($prof_img !== "" && $_FILES['name'] == "" && $_POST['prof_delete'] == "" && $_POST['prof_text'] !== "") {
-            $prof_get_sql = "UPDATE employees 
-            SET prof_text = :prof_text WHERE id = :id";
-        
-            try{
-            $prof_get_stmt = $pdo->prepare($prof_get_sql);
-            $prof_get_stmt->bindValue(':id',$_SESSION['id'],PDO::PARAM_INT);
-            $prof_get_stmt->bindValue(':prof_text',$_POST['prof_text'],PDO::PARAM_STR);
-        
-            $prof_get_stmt->execute();
-        
-            
-            echo "更新しました";
-        
-            }catch(PDOException $e){
-            echo $e->getMessage();    
-            }
-        
-        } elseif (isset($_POST['prof_delete']) && $_POST['prof_text'] !== "") {
-            $prof_get_sql = "UPDATE employees 
-            SET image = :image, prof_text = :prof_text WHERE id = :id";
-        
-            try{
-            $prof_get_stmt = $pdo->prepare($prof_get_sql);
-            $prof_get_stmt->bindValue(':id',$_SESSION['id'],PDO::PARAM_INT);
-            $prof_get_stmt->bindValue(':image',"",PDO::PARAM_STR);
-            $prof_get_stmt->bindValue(':prof_text',$_POST['prof_text'],PDO::PARAM_STR);
-        
-            $prof_get_stmt->execute();
-        
-            echo "更新しました";
-        
-            }catch(PDOException $e){
-            echo $e->getMessage();    
-            }
+        $update_sql = "UPDATE employees SET image = :image, prof_text = :prof_text WHERE id = :id";
+        $update_stmt = $pdo->prepare($update_sql);
 
-        } elseif (isset($_POST['prof_delete']) && $_POST['prof_text'] == "") {
-
-            $prof_get_sql = "UPDATE employees 
-            SET image = :image, prof_text = :prof_text WHERE id = :id";
-        
-            try{
-            $prof_get_stmt = $pdo->prepare($prof_get_sql);
-            $prof_get_stmt->bindValue(':id',$_SESSION['id'],PDO::PARAM_INT);
-            $prof_get_stmt->bindValue(':image',"",PDO::PARAM_STR);
-            $prof_get_stmt->bindValue(':prof_text',"",PDO::PARAM_STR);
-        
-            $prof_get_stmt->execute();
-        
-            echo "更新しました";
-        
-            }catch(PDOException $e){
-            echo $e->getMessage();    
+        // 画像削除の場合
+        if (isset($_POST['prof_delete'])) {
+            try {
+                $update_stmt = $pdo->prepare($update_sql);
+                $update_stmt->execute([
+                    ':id' => $_SESSION['id'],
+                    ':prof_text' => $_POST['prof_text'],
+                    ':image' => null,
+                ]);
+            } catch (PDOException $e) {
+                echo $e->getMessage();
             }
-
+        } elseif ($_FILES['name'] === null) {
+            $image = $prof_img ? $prof_img : null;
+            try {
+                $update_stmt = $pdo->prepare($update_sql);
+                $update_stmt->execute([
+                    ':id' => $_SESSION['id'],
+                    ':prof_text' => $_POST['prof_text'],
+                    ':image' => $image,
+                ]);
+            } catch (PDOException $e) {
+                echo $e->getMessage();
+            }
         } else {
-
             $image = uniqid(mt_rand(), true);//ファイル名をユニーク化
-            $image .= '.' . substr(strrchr($_FILES['image']['name'], '.'), 1);//アップロードされたファイルの拡張子を取得
-            $file = "img/$image";
-        
-            $prof_get_sql = "UPDATE employees 
-            SET image = :image, prof_text = :prof_text WHERE id = :id";
-        
-            try{
-            $prof_get_stmt = $pdo->prepare($prof_get_sql);
-            $prof_get_stmt->bindValue(':id',$_SESSION['id'],PDO::PARAM_INT);
-            $prof_get_stmt->bindValue(':image',$image,PDO::PARAM_STR);
-            $prof_get_stmt->bindValue(':prof_text',$_POST['prof_text'],PDO::PARAM_STR);
+            $image .= '.' . substr(strrchr($_FILES['image']['name'], '.'), 1);//アップロードされたファイルの拡張子を取得 
 
-                if (!empty($_FILES['image']['name'])) {//ファイルが選択されていれば$imageにファイル名を代入
-                    move_uploaded_file($_FILES['image']['tmp_name'], './img/' . $image);//imgディレクトリにファイル保存
-                    if (exif_imagetype($file)) {//画像ファイルかのチェック
-                        echo '更新しました';
-                        $prof_get_stmt->execute();
-                    } else {
-                        echo '画像ファイルではありません';
-                    }
-                } else {
-                    echo "ファイルが正しくありません";
+            if (!empty($_FILES['image']['name'])) {//ファイルが選択されていれば$imageにファイル名を代入
+                move_uploaded_file($_FILES['image']['tmp_name'], './img/' . $image);//imgディレクトリにファイル保存
+                if (!exif_imagetype($file)) {//画像ファイルかのチェック
+                    echo '画像ファイルではありません';
                 }
-            }catch(PDOException $e){
-            echo $e->getMessage();    
+            } else {
+                echo "ファイルが正しくありません";
+            }
+
+            try {
+                $update_stmt = $pdo->prepare($update_sql);
+                $update_stmt->execute([
+                    ':id' => $_SESSION['id'],
+                    ':prof_text' => $_POST['prof_text'],
+                    ':image' => $image,
+                ]);
+            } catch (PDOException $e) {
+                echo $e->getMessage();
             }
         }
     }

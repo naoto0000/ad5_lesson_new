@@ -12,159 +12,12 @@ $name = str_replace("　","",$name);
 
 $search_sex = htmlspecialchars($_GET["search_sex"],ENT_QUOTES);
 
-$search_branch = htmlspecialchars($_GET["search_branch"],ENT_QUOTES);
+// $search_branch = htmlspecialchars($_GET["search_branch"],ENT_QUOTES);
+$search_branch = $_GET["search_branch"];
 
-// csv出力処理
-if (isset($_GET['csv_submit'])) {
-    // ファイル名を指定してHTTPヘッダを設定
-    header('Content-Type: text/csv; charset=Shift_JIS');
-    header('Content-Disposition: attachment; filename="emp.csv"');
-        
-    if ($name == "" && $search_sex == "" && $search_branch == "") {
+require_once('search_csv.php');
 
-    $csv_sql = "SELECT e.id, e.name, e.kana, b.branch_name, e.sex, e.birthdate, e.email, e.comm_time, e.blood_type, e.married 
-    FROM employees AS e 
-    INNER JOIN branches AS b 
-    ON e.branch_id = b.id WHERE e.delete_flg IS NULL";
-
-    $csv_emp_get = $pdo->query($csv_sql)->fetchAll(PDO::FETCH_ASSOC);
-
-    require_once('csv_download.php');
-
-    } else {
-            // 氏名のみ入力時
-        if ($name) {
-            $csv_sql = "SELECT e.id, e.name, e.kana, b.branch_name, e.sex, e.birthdate, e.email, e.comm_time, e.blood_type, e.married 
-            FROM employees AS e 
-            INNER JOIN branches AS b 
-            ON e.branch_id = b.id WHERE e.delete_flg IS NULL AND (e.name LIKE :word OR e.kana LIKE :word2)";
-
-            $csv_emp_row = $pdo->prepare($csv_sql);
-            $csv_emp_row->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-            $csv_emp_row->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-            $csv_emp_row->execute();
-            $csv_emp_get = $pdo->fetchAll(PDO::FETCH_ASSOC);
-        
-            require_once('csv_download.php');
-            
-        }
-        // 性別検索時
-        if ($search_sex) {
-            // 氏名も入力されている場合
-            if ($name) {
-                $csv_sql = "SELECT e.id, e.name, e.kana, b.branch_name, e.sex, e.birthdate, e.email, e.comm_time, e.blood_type, e.married 
-                FROM employees AS e 
-                INNER JOIN branches AS b 
-                ON e.branch_id = b.id WHERE e.delete_flg IS NULL AND (e.name LIKE :word OR e.kana LIKE :word2) AND sex = :sex";
-    
-                $csv_emp_row = $pdo->prepare($csv_sql);
-                $csv_emp_row->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-                $csv_emp_row->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-                $csv_emp_row->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-                $csv_emp_row->execute();
-                $csv_emp_get = $pdo->fetchAll(PDO::FETCH_ASSOC);
-            
-                require_once('csv_download.php');
-
-                // 性別のみ入力時
-            } else {
-                $csv_sql = "SELECT e.id, e.name, e.kana, b.branch_name, e.sex, e.birthdate, e.email, e.comm_time, e.blood_type, e.married 
-                FROM employees AS e 
-                INNER JOIN branches AS b 
-                ON e.branch_id = b.id WHERE e.delete_flg IS NULL AND sex = :sex";
-
-                $csv_emp_row = $pdo->prepare($csv_sql);
-                $csv_emp_row->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-                $csv_emp_row->execute();
-                $csv_emp_get = $pdo->fetchAll(PDO::FETCH_ASSOC);
-
-                require_once('csv_download.php');
-
-            }
-        }
-        
-        if ($search_branch) {
-            if ($name) {
-                $base_sql = "SELECT * FROM `employees` WHERE (name LIKE :word OR kana LIKE :word2) AND branch_id = :branch_id AND delete_flg IS NULL";
-                $employees = $pdo->prepare($base_sql);
-                $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);    
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-                $search_count = $employees->rowCount();
-        
-                $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-                INNER JOIN branches AS b ON e.branch_id = b.id 
-                WHERE (e.name LIKE :word OR e.kana LIKE :word2) AND e.branch_id = :branch_id AND e.delete_flg IS NULL LIMIT {$start},5";
-        
-                $employees = $pdo->prepare($limit_sql);
-                $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-            } elseif ($search_sex) {
-                $base_sql = "SELECT * FROM `employees` WHERE sex = :sex AND branch_id = :branch_id AND delete_flg IS NULL";
-                $employees = $pdo->prepare($base_sql);
-                $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-                $search_count = $employees->rowCount();
-        
-                $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-                INNER JOIN branches AS b ON e.branch_id = b.id 
-                WHERE sex = :sex AND branch_id = :branch_id AND delete_flg IS NULL LIMIT {$start},5";
-                
-                $employees = $pdo->prepare($limit_sql);
-                $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-            } elseif ($name && $search_sex) {
-                $base_sql = "SELECT * FROM `employees` 
-                            WHERE ((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id AND delete_flg IS NULL";
-                $employees = $pdo->prepare($base_sql);
-                $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-                $search_count = $employees->rowCount();
-                
-                $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-                INNER JOIN branches AS b ON e.branch_id = b.id 
-                WHERE ((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id AND delete_flg IS NULL LIMIT {$start},5";
-        
-                $employees = $pdo->prepare($limit_sql);
-                $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-                $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-            } else {
-                $base_sql = "SELECT * FROM `employees` WHERE branch_id = :branch_id AND delete_flg IS NULL";
-                $employees = $pdo->prepare($base_sql);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-        
-                $search_count = $employees->rowCount();
-        
-                $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-                INNER JOIN branches AS b ON e.branch_id = b.id 
-                WHERE e.branch_id = :branch_id AND e.delete_flg IS NULL LIMIT {$start},5";
-        
-                $employees = $pdo->prepare($limit_sql);
-                $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-                $employees->execute();
-            }
-        }
-    }
-}
-
+// 検索処理
 if (isset($_GET['page'])) {
     $page = $_GET['page'];
 } else {
@@ -261,7 +114,7 @@ if ($search_sex) {
 }
 
 if ($search_branch) {
-    if ($name) {
+    if ($name !== "" && $search_sex === "") {
         $base_sql = "SELECT * FROM `employees` WHERE (name LIKE :word OR kana LIKE :word2) AND branch_id = :branch_id AND delete_flg IS NULL";
         $employees = $pdo->prepare($base_sql);
         $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
@@ -281,7 +134,7 @@ if ($search_branch) {
         $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
         $employees->execute();
 
-    } elseif ($search_sex) {
+    } elseif ($search_sex !== "" && $name === "") {
         $base_sql = "SELECT * FROM `employees` WHERE sex = :sex AND branch_id = :branch_id AND delete_flg IS NULL";
         $employees = $pdo->prepare($base_sql);
         $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
@@ -299,43 +152,44 @@ if ($search_branch) {
         $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
         $employees->execute();
 
-    } elseif ($name && $search_sex) {
+    } elseif ($name !== "" && $search_sex !== "") {
         $base_sql = "SELECT * FROM `employees` 
                     WHERE ((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id AND delete_flg IS NULL";
         $employees = $pdo->prepare($base_sql);
         $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
         $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
+        $employees->bindValue(':sex',$search_sex,PDO::PARAM_INT);
+        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
         $employees->execute();
 
         $search_count = $employees->rowCount();
         
         $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
         INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE ((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id AND delete_flg IS NULL LIMIT {$start},5";
+        WHERE (((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id) AND delete_flg IS NULL LIMIT {$start},5";
 
         $employees = $pdo->prepare($limit_sql);
         $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
         $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
+        $employees->bindValue(':sex',$search_sex,PDO::PARAM_INT);
+        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
         $employees->execute();
 
     } else {
         $base_sql = "SELECT * FROM `employees` WHERE branch_id = :branch_id AND delete_flg IS NULL";
         $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
+        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
         $employees->execute();
 
-        $search_count = $employees->rowCount();
+        $employeeData = $employees->fetchAll(PDO::FETCH_ASSOC);
+        $search_count = count($employeeData);
 
         $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
         INNER JOIN branches AS b ON e.branch_id = b.id 
         WHERE e.branch_id = :branch_id AND e.delete_flg IS NULL LIMIT {$start},5";
 
         $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
+        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
         $employees->execute();
     }
 }
@@ -427,7 +281,7 @@ $pdo = null;
     <?php endif; ?>
 
 <!-- 検索結果が５件未満の場合ページネーションを表示させない -->
-<?php if ($search_count > 6): ?>
+<?php if ($search_count > 5): ?>
 
     <?php require_once('page_display_search.php'); ?>
 

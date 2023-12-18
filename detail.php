@@ -1,66 +1,59 @@
-
 <?php 
 
 require_once('function.php');
 
 require_once('not_login.php');
+require(__DIR__ . '/entities/employee.php');
 
 $id = $_GET['id'];
 
-$prof_sql = "SELECT * FROM `employees` WHERE delete_flg IS NULL";
-$prof = $pdo->query($prof_sql);
-
-foreach ($prof as $prof_row) {
-    if ($id == $prof_row['id']) {
-        $prof_birthdate_get = $prof_row['birthdate'];
-        $prof_name = $prof_row['name'];       
-        $prof_kana = $prof_row['kana'];       
-        $prof_sex = $prof_row['sex'];       
-        $prof_img =  $prof_row['image'];
-        $prof_text =  $prof_row['prof_text'];
-        $prof_branch_id =  $prof_row['branch_id'];        
-        $prof_blood =  $prof_row['blood_type'];        
-        $prof_quali =  $prof_row['quali'];        
-    }
-}
-
-sscanf($prof_birthdate_get, "%d-%d-%d", $year, $month, $day);
-
-    // 現在日付
-    $now = date('Ymd');
-
-    // 誕生日
-    $birthday = $prof_birthdate_get ;
-    $birthday = str_replace("-", "", $birthday);
-
-    // 年齢
-    $age = floor(($now - $birthday) / 10000);
-
-    $blood_type = "";
-
-    switch ($prof_blood) {  
-        case 1:
-            $blood_type = "A型";
-            break;
-        case 2:
-            $blood_type = "B型";
-            break;
-        case 3:
-            $blood_type = "AB型";
-            break;
-        case 4:
-            $blood_type = "O型";
-            break;
-        case 5:
-            $blood_type = "不明";
-            break;
-
-    }
+$sql = "SELECT e.*, b.branch_name FROM employees AS e INNER JOIN branches as b ON e.branch_id = b.id WHERE e.id = :id AND e.delete_flg is null";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([
+    ':id' => $id,
+]);
+$employee = new Employee($stmt->fetch());
 
     require_once('branch_get.php');
 
     require_once('quali_get.php');
 
+    /**
+     * 性別によって枠線変える
+     *
+     * @param string|null $sex
+     * @return string
+     */
+    function generateBorder(?string $sex): string
+    {
+        if ($sex === null) {
+            return "detail_img";
+        }
+
+        $int_sex = (int)$sex;
+
+        if ($int_sex === 1) {
+            return "detail_img_man";
+        }
+
+        if ($int_sex === 2) {
+            return "detail_img_woman";
+        }
+
+        return "detail_img";
+    }
+
+    /**
+     * 日付をフォーマット
+     *
+     * @param string|null $birthdate
+     * @param string $format_type
+     * @return string
+     */
+    function formatDate(?string $birthdate, string $format_type): string
+    {
+        return date($format_type, strtotime($birthdate));
+    }
 ?>
 
 <?php require_once('header.html'); ?>
@@ -68,74 +61,52 @@ sscanf($prof_birthdate_get, "%d-%d-%d", $year, $month, $day);
     <?php require_once('menu.php');?>
 
     <header>
-        <h1>社員詳細 : <?php echo $prof_name; ?>さん</h1>
+        <h1>社員詳細 : <?php echo $employee->name; ?>さん</h1>
     </header>
     
     <main>
 
         <div class="detail_class">
 
-        <!-- 性別によって枠線の色を変えている -->
-        <?php if ($prof_sex == 1) : ?>    
-            <?php if ($prof_img !== "") : ?>
-                <img src="img/<?php echo $prof_img; ?>" alt="" class="detail_img_man">
-            <?php else : ?>
-                <img src="img/now_printing.png" alt="" class="detail_img_man">
-            <?php endif; ?>
-
-        <?php elseif ($prof_sex == 2) : ?>
-            <?php if ($prof_img !== "") : ?>
-                <img src="img/<?php echo $prof_img; ?>" alt="" class="detail_img_woman">
-            <?php else : ?>
-                <img src="img/now_printing.png" alt="" class="detail_img_woman">
-            <?php endif; ?>
-
+        <?php if ($employee->image) : ?>
+            <img src="img/<?php echo $employee->image; ?>" alt="" class="<?php echo generateBorder($employee->sex); ?>">
         <?php else : ?>
-            <?php if ($prof_img !== "") : ?>
-                <img src="img/<?php echo $prof_img; ?>" alt="" class="detail_img">
-            <?php else : ?>
-                <img src="img/now_printing.png" alt="" class="detail_img">
-            <?php endif; ?>
-
-        <?php endif ; ?>
+            <img src="img/now_printing.png" alt="" class="<?php echo generateBorder($employee->sex); ?>">
+        <?php endif; ?>
 
             <section>
                 <div class="detail_contents">
                     <h2 class="detail_title">氏名</h2>
-                    <p class="detail_text"><?php echo $prof_name; ?>(<?php echo $prof_kana; ?>)</p>
+                    <p class="detail_text"><?php echo $employee->name; ?>(<?php echo $employee->kana; ?>)</p>
                 </div>
 
-                <?php if (!empty($prof_birthdate_get)) : ?>
+                <?php if ($employee->birthdate) : ?>
                 <div class="detail_contents">
                     <h2 class="detail_title">生年月日</h2>
-                    <p class="detail_text"><?php echo $year; ?>年<?php echo $month; ?>月<?php echo $day; ?>日 (<?php echo $age; ?>歳)</p>
+                    <p class="detail_text"><?php echo formatDate($employee->birthdate, 'Y年m月d日') ?> (<?php echo $employee->age; ?>歳)</p>
                 </div>
                 <?php endif; ?>
 
                 <div class="detail_contents">
                     <h2 class="detail_title">支店</h2>
                     <p class="detail_text">
-                        <?php foreach ($branch_row as $branch_name_detail) {
-                            if ($branch_name_detail['id'] === $prof_branch_id) {
-                                echo $branch_name_detail['branch_name'];
-                            }
-                        } ?>
+                        <?php echo $employee->branch_name; ?>
                     </p>
                 </div>
 
-                <?php if (isset($prof_blood)) : ?>
+                <?php if ($employee->blood_type) : ?>
                 <div class="detail_contents">
                     <h2 class="detail_title">血液型</h2>
-                    <p class="detail_text"><?php echo $blood_type; ?></p>
+                    <p class="detail_text"><?php echo $employee->blood_type_label; ?></p>
                 </div>
                 <?php endif; ?>
                 
-                <?php if (!empty($prof_quali)) : ?>
+                <?php if ($employee->quali) : ?>
                 <div class="detail_contents">
                     <h2 class="detail_title">資格</h2>
                     <div class="detail_quali">
                         <?php foreach ($quali_masta as $quali_row) : ?>
-                            <?php if (1 == preg_match('/' . preg_quote($quali_row['id'], '/') . '/', $prof_quali)) : ?>
+                            <?php if (in_array($quali_row['id'], $employee->qualies)) : ?>
                                 <p class="detail_text"><?php echo $quali_row['quali_name']; ?></p>
                             <?php endif; ?>
                         <?php endforeach; ?>
@@ -143,10 +114,10 @@ sscanf($prof_birthdate_get, "%d-%d-%d", $year, $month, $day);
                 </div>
                 <?php endif; ?>
 
-                <?php if ($prof_text !== "") : ?>
+                <?php if ($employee->prof_text) : ?>
                 <div class="detail_contents">
                     <h2 class="detail_title">紹介文</h2>
-                    <p class="detail_text"><?php echo $prof_text; ?></p>
+                    <p class="detail_text"><?php echo $employee->prof_text; ?></p>
                 </div>
                 <?php endif; ?>
 

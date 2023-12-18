@@ -52,11 +52,12 @@ if ($_POST['quali_submit']) {
                     $delete_stmt->execute();
         
                     $pdo->commit();
+
+                    echo "削除しました";
             
                 } catch(Exception $e){
                     $pdo->rollBack();
                 }
-                // echo "削除しました";
         
             } else {
                 $quali_edit_sql = "UPDATE quali 

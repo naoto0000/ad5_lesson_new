@@ -127,11 +127,12 @@ if ($_POST['csv_file_submit']) {
                     $birthdate_check === 1 && $mail_result === 1 && $mail_match_result === 1 && $comm_time_check === 1 && 
                     $blood_type !== 6 && $married !== 2) {
 
-                    $csv_stmt = $pdo->prepare("
-                    INSERT INTO employees 
+                    $csv_sql = "INSERT INTO employees 
                     (name, kana, sex, birthdate, email, password, comm_time, blood_type, married, branch_id, quali) 
                     VALUES 
-                    (:name, :kana, :sex, :birthdate, :email, :password, :comm_time, :blood_type, :married, :branch_id, :quali)");
+                    (:name, :kana, :sex, :birthdate, :email, :password, :comm_time, :blood_type, :married, :branch_id, :quali)";
+
+                    $csv_stmt = $pdo->prepare($csv_sql);
                     $csv_stmt->bindValue(':name', $name,PDO::PARAM_STR);
                     $csv_stmt->bindValue(':kana', $kana,PDO::PARAM_STR);
                     $csv_stmt->bindValue(':sex', $sex,PDO::PARAM_INT);
@@ -156,7 +157,7 @@ if ($_POST['csv_file_submit']) {
 
                 $csv_sql = "UPDATE employees 
                 SET name = :name, kana = :kana, sex = :sex, birthdate = :birthdate, 
-                    email = :email, comm_time = :comm_time, blood_type = :blood_type, married = :married, branch_id = :branch_id, quali = :quali
+                    email = :email, comm_time = :comm_time, blood_type = :blood_type, married = :married, branch_id = :branch_id
                 WHERE id = :id";
 
                 $csv_stmt = $pdo->prepare($csv_sql);
@@ -170,7 +171,7 @@ if ($_POST['csv_file_submit']) {
                 $csv_stmt->bindValue(':blood_type', $blood_type,PDO::PARAM_INT);
                 $csv_stmt->bindValue(':married', $married,PDO::PARAM_INT);
                 $csv_stmt->bindValue(':branch_id', $branch_id,PDO::PARAM_INT);
-                $csv_stmt->bindValue(':quali', $quali,PDO::PARAM_STR);
+                // $csv_stmt->bindValue(':quali', $quali,PDO::PARAM_STR);
                 $csv_stmt->execute();
             
                 echo "ファイルアップロード完了しました";    

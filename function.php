@@ -4,6 +4,9 @@ ini_set('error_log','php_error.log');  //ログの出力ファイルを指定
 
 // ini_set('display_errors','on');
 
+require(__DIR__ . '/utilities/htmlspecialchars.php');
+require(__DIR__ . '/utilities/error_message.php');
+
 session_start();
 
 session_regenerate_id(true);

@@ -27,8 +27,10 @@
     <!-- 進むボタン -->
     <?php if ($page < $max_page) : ?>
         <a href="?page=<?php echo (htmlspecialchars($page, ENT_QUOTES) + 1); ?>" class="page_feed">&raquo;</a>
+
     <?php else: ?>
         <span class="first_last_page">&raquo;</span>
+
     <?php endif; ?>
 
     </div>
