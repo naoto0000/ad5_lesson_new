@@ -1,4 +1,3 @@
-
 <?php 
 $bloodCotegory = [
     ['value' => 1, 'text' => 'A型'],

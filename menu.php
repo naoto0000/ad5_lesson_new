@@ -1,4 +1,3 @@
-
 <?php 
 require_once('function.php'); 
 
@@ -13,15 +12,13 @@ if (isset($_POST['logout_submit'])) {
 ?>
 
 <div class="menu">
-        <div class="menu_class">
+        <div class="menu_class" id="menu_item">
                 <div class="menu_item"><a href="index.php" class="menu_text">社員一覧</a></div>
                 <div class="menu_item"><a href="registration.php" class="menu_text">社員登録</a></div>
                 <div class="menu_item"><a href="emp_total.php" class="menu_text">社員集計</a></div>
                 <div class="menu_item"><a href="branch.php" class="menu_text">支店一覧</a></div>
                 <div class="menu_item"><a href="branch_regi.php" class="menu_text">支店登録</a></div>
                 <div class="menu_item"><a href="quali.php" class="menu_text">資格マスタ</a></div>
-                <!-- <div class="menu_item"><a href="group.php" class="menu_text">部門一覧</a></div>
-                <div class="menu_item"><a href="group_regi.php" class="menu_text">部門登録</a></div> -->
                 <div class="menu_item"><a href="profile.php" class="menu_text">プロフィール</a></div>
         </div>
 

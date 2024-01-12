@@ -1,7 +1,8 @@
 <?php require_once('header.html'); ?>
 <?php require_once('menu.php'); ?>
-<header>
+<header id="header">
     <h1>社員編集</h1>
+    <?php include(__DIR__ . '/../utilities/navi.html'); ?>
 </header>
 
 <main>
@@ -33,9 +34,9 @@
 
                         <span class="indi">
                             <?php
-                            if ($_SESSION['validation_errors']['edit_name']) {
+                            if (isset($_SESSION['validation_errors']['name']) && $_SESSION['validation_errors']['name']) {
                                 echo $error_message1;
-                                $_SESSION['validation_errors']['edit_name'] = "";
+                                initializeValidationErrors('name');
                             }
                             ?>
                         </span>
@@ -55,9 +56,9 @@
 
                         <span class="indi">
                             <?php
-                            if ($_SESSION['validation_errors']['edit_kana']) {
+                            if (isset($_SESSION['validation_errors']['kana']) && $_SESSION['validation_errors']['kana']) {
                                 echo $error_message1;
-                                $_SESSION['validation_errors']['edit_kana'] = "";
+                                initializeValidationErrors('kana');
                             }
                             ?>
                         </span>
@@ -104,9 +105,9 @@
 
                         <span class="indi">
                             <?php
-                            if ($_SESSION['validation_errors']['edit_branch']) {
+                            if (isset($_SESSION['validation_errors']['branch']) && $_SESSION['validation_errors']['branch']) {
                                 echo $error_message1;
-                                $_SESSION['validation_errors']['edit_branch'] = "";
+                                initializeValidationErrors('branch');
                             }
                             ?>
                         </span>
@@ -169,19 +170,18 @@
 
                         <span class="indi">
                             <?php
-                            if ($_SESSION['validation_errors']['edit_mail']) {
+                            if (isset($_SESSION['validation_errors']['mail']) && $_SESSION['validation_errors']['mail']) {
                                 echo $error_message1;
-                                $_SESSION['validation_errors']['edit_mail'] = "";
-                                // 下記をしておかないとelseifのエラーメッセージが表示されてしまう
-                                $_SESSION['validation_errors']['mail_check'] = "";
-                            } elseif ($_SESSION['validation_errors']['mail_check']) {
+                                initializeValidationErrors('mail');
+                                initializeValidationErrors('mail_check');
+                                initializeValidationErrors('mail_match');
+                            } elseif (isset($_SESSION['validation_errors']['mail_check']) && $_SESSION['validation_errors']['mail_check']) {
                                 echo $error_message2;
-                                $_SESSION['validation_errors']['mail_check'] = "";
-                            }
-
-                            if ($_SESSION['validation_errors']['mail_match']) {
+                                initializeValidationErrors('mail_check');
+                                initializeValidationErrors('mail_match');
+                            } elseif (isset($_SESSION['validation_errors']['mail_match']) && $_SESSION['validation_errors']['mail_match']) {
                                 echo $error_message3;
-                                $_SESSION['validation_errors']['mail_match'] = "";
+                                initializeValidationErrors('mail_match');
                             }
                             ?>
                         </span>
@@ -208,9 +208,9 @@
 
                         <span class="indi">
                             <?php
-                            if ($_SESSION['validation_errors']['pass_check']) {
+                            if (isset($_SESSION['validation_errors']['pass_check']) && $_SESSION['validation_errors']['pass_check']) {
                                 echo $error_message4;
-                                $_SESSION['validation_errors']['pass_check'] = "";
+                                initializeValidationErrors('pass_check');
                             }
                             ?>
                         </span>
@@ -239,40 +239,42 @@
                         </div>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0) : ?>
+                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_blood'])) : ?>
                             <div class="regi_blood">
                                 <?php
-                                if (isset($_POST['edit_blood'])) {
-                                    foreach ($bloodCotegory as $blood) {
-                                        if ($_POST['edit_blood'] == $blood['value']) {
-                                            echo
-                                            '<div>
+                                foreach ($bloodCotegory as $blood) {
+                                    if ($_POST['edit_blood'] == $blood['value']) {
+                                        echo
+                                        '<div>
                                             <input type="radio" name="edit_blood" value="' . $blood['value'] . '" checked/>
                                             <label for="' . $blood['value'] . '">' . $blood['text'] . '</label>
                                         </div>';
-                                        } else {
-                                            echo
-                                            '<div>
+                                    } else {
+                                        echo
+                                        '<div>
                                             <input type="radio" name="edit_blood" value="' . $blood['value'] . '"/>
                                             <label for="' . $blood['value'] . '">' . $blood['text'] . '</label>
                                         </div>';
-                                        }
                                     }
-                                } else {
-                                    foreach ($bloodCotegory as $blood) {
-                                        if ($blood_type == $blood['value']) {
-                                            echo
-                                            '<div>
-                                            <input type="radio" name="edit_blood" value="' . $blood['value'] . '" checked/>
-                                            <label for="' . $blood['value'] . '">' . $blood['text'] . '</label>
-                                        </div>';
-                                        } else {
-                                            echo
-                                            '<div>
-                                            <input type="radio" name="edit_blood" value="' . $blood['value'] . '"/>
-                                            <label for="' . $blood['value'] . '">' . $blood['text'] . '</label>
-                                        </div>';
-                                        }
+                                }
+                                ?>
+                            </div>
+                        <?php else : ?>
+                            <div class="regi_blood">
+                                <?php
+                                foreach ($bloodCotegory as $blood) {
+                                    if ($blood_type == $blood['value']) {
+                                        echo
+                                        '<div>
+                                        <input type="radio" name="edit_blood" value="' . $blood['value'] . '" checked/>
+                                        <label for="' . $blood['value'] . '">' . $blood['text'] . '</label>
+                                    </div>';
+                                    } else {
+                                        echo
+                                        '<div>
+                                        <input type="radio" name="edit_blood" value="' . $blood['value'] . '"/>
+                                        <label for="' . $blood['value'] . '">' . $blood['text'] . '</label>
+                                    </div>';
                                     }
                                 }
                                 ?>
@@ -281,9 +283,9 @@
                         <?php endif; ?>
                         <span class="indi">
                             <?php
-                            if ($_SESSION['validation_errors']['edit_blood']) {
+                            if (isset($_SESSION['validation_errors']['blood']) && $_SESSION['validation_errors']['blood']) {
                                 echo $error_message1;
-                                $_SESSION['validation_errors']['edit_blood'] = "";
+                                initializeValidationErrors('blood');
                             }
                             ?>
                         </span>
@@ -291,10 +293,21 @@
 
                     <div class="regi_class">
                         <label class="regi_label">既婚</label>
-
                         <!-- 入力データ保持の条件分岐 -->
                         <?php if (count($_SESSION['validation_errors']) !== 0) : ?>
-                            <?php if (isset($_POST['edit_married']) || $married == 1) : ?>
+                            <?php if (isset($_POST['edit_married'])) : ?>
+                                <div>
+                                    <input type="checkbox" name="edit_married" value="1" class="married_input" checked />
+                                    <label for="既婚">既婚</label>
+                                </div>
+                            <?php else : ?>
+                                <div>
+                                    <input type="checkbox" name="edit_married" value="1" class="married_input" />
+                                    <label for="既婚">既婚</label>
+                                </div>
+                            <?php endif; ?>
+                        <?php else : ?>
+                            <?php if ($married == 1) : ?>
                                 <div>
                                     <input type="checkbox" name="edit_married" value="1" class="married_input" checked />
                                     <label for="既婚">既婚</label>
@@ -306,36 +319,42 @@
                                 </div>
                             <?php endif; ?>
                         <?php endif; ?>
-
                     </div>
 
                     <div class="regi_class">
                         <label class="regi_label">保有資格</label>
+                        <div class="regi_quali">
 
-                        <div>
                             <?php foreach ($quali_masta as $quali_masta_row) : ?>
-                                <?php if (count($_SESSION['validation_errors']) !== 0 && in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
+                                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_quali[]']) && in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
                                     <!-- postされたデータを保持 -->
-                                    <?php if (in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
-                                        <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" checked />
-                                        <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                    <?php if (isset($_POST['edit_quali[]']) && in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
+                                        <div>
+                                            <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" checked />
+                                            <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        </div>
                                     <?php else : ?>
-                                        <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" />
-                                        <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        <div>
+                                            <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" />
+                                            <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        </div>
                                     <?php endif; ?>
 
                                 <?php else : ?>
                                     <!-- 既に登録データがあった場合 -->
                                     <?php if (1 == preg_match('/\b' . preg_quote($quali_masta_row['id'], '/') . '\b/', $quali_id)) : ?>
-                                        <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" checked />
-                                        <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        <div>
+                                            <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" checked />
+                                            <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        </div>
                                     <?php else : ?>
-                                        <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" />
-                                        <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        <div>
+                                            <input type="checkbox" name="edit_quali[]" value="<?php echo $quali_masta_row['id']; ?>" class="quali_checkbox" />
+                                            <label for=""><?php echo $quali_masta_row['quali_name']; ?></label>
+                                        </div>
                                     <?php endif; ?>
                                 <?php endif; ?>
                             <?php endforeach; ?>
-
                         </div>
                     </div>
 
@@ -343,7 +362,7 @@
 
                     <div class="submit_etc">
                         <input type="submit" name="edit_submit" value="保存" class="regi_submit">
-                        <input type="submit" name="delete_submit" value="削除" class="regi_submit">
+                        <input type="submit" name="delete_submit" value="削除" class="regi_submit" onclick="return confirm('社員データを削除しても良いですか？');">
                     </div>
 
                 </form>
@@ -353,20 +372,4 @@
 
 </main>
 </body>
-
-<script>
-    let eye = document.getElementById("eye");
-    eye.addEventListener('click', function() {
-        if (this.previousElementSibling.getAttribute('type') == 'password') {
-            this.previousElementSibling.setAttribute('type', 'text');
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-        } else {
-            this.previousElementSibling.setAttribute('type', 'password');
-            this.classList.toggle('fa-eye');
-            this.classList.toggle('fa-eye-slash');
-        }
-    })
-</script>
-
 </html>

@@ -1,6 +1,4 @@
-
 <?php 
-
 $prefCotegory = [
     ['value' => '', 'text' => '都道府県を選択'],
     ['value' => '1', 'text' => '北海道'],

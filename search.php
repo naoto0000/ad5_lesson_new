@@ -1,21 +1,13 @@
-
 <?php
-
 require_once('function.php');
-
 require_once('not_login.php');
 
 // 入力値を取得 文字前後の空白除去&エスケープ処理
 $name = trim(htmlspecialchars($_GET['search_name'],ENT_QUOTES));
 // 文字列の中の「　」(全角空白)を「」(何もなし)に変換
 $name = str_replace("　","",$name);
-
-$search_sex = htmlspecialchars($_GET["search_sex"],ENT_QUOTES);
-
-// $search_branch = htmlspecialchars($_GET["search_branch"],ENT_QUOTES);
+$search_sex = $_GET["search_sex"];
 $search_branch = $_GET["search_branch"];
-
-require_once('search_csv.php');
 
 // 検索処理
 if (isset($_GET['page'])) {
@@ -32,261 +24,108 @@ if ($page > 1) {
     $start = 0;
 }
 
-try{
-$base_sql = "SELECT * FROM `employees` WHERE delete_flg IS NULL";
-$where_sql = "";
-$limit_sql = "";
+require(__DIR__ . '/entities/employee_class.php');
 
-if ($name == "" && $search_sex == "" && $search_branch == "") {
+// 条件を格納する配列
+$conditions = [];
 
-    // ここでは検索結果と件数を取得
-    $employees = $pdo->prepare($base_sql);
-    $employees->execute();
-    $search_count = $employees->rowCount();
-
-    // ここでは上記で取得したデータを５件のみの表示にする
-    $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e INNER JOIN branches AS b ON e.branch_id = b.id WHERE e.delete_flg IS NULL LIMIT {$start},5";
-    $employees = $pdo->query($limit_sql);
-
-} else {
-    // 氏名のみ入力時
+// 名前の検索条件
 if ($name) {
-    $where_sql = " AND (name LIKE :word OR kana LIKE :word2)";
-    $base_sql .= $where_sql;
-    $employees = $pdo->prepare($base_sql);
-    $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-    $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-    $employees->execute();
-
-    $search_count = $employees->rowCount();
-
-    $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-    INNER JOIN branches AS b ON e.branch_id = b.id 
-    WHERE (name LIKE :word OR kana LIKE :word2) AND delete_flg IS NULL LIMIT {$start},5";
-
-    $employees = $pdo->prepare($limit_sql);
-    $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-    $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-    $employees->execute();
-
+    $conditions[] = "(e.name LIKE :word OR e.kana LIKE :word2)";
 }
-// 性別検索時
+// 性別の検索条件
 if ($search_sex) {
-    // 氏名も入力されている場合
-    if ($name) {
-        $base_sql .= " AND sex = :sex";
-        $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);    
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->execute();
-
-        $search_count = $employees->rowCount();
-
-        $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-        INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE ((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND delete_flg IS NULL LIMIT {$start},5";
-        
-        $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->execute();
-    
-        // 性別のみ入力時
-    } else {
-        $where_sql .= " AND sex = :sex";
-        $base_sql .= $where_sql;
-        $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->execute();
-
-        $search_count = $employees->rowCount();
-
-        $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-        INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE sex = :sex AND delete_flg IS NULL LIMIT {$start},5";
-
-        $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->execute();
-    }
+    $conditions[] = "e.sex = :sex";
 }
-
+// 支店の検索条件
 if ($search_branch) {
-    if ($name !== "" && $search_sex === "") {
-        $base_sql = "SELECT * FROM `employees` WHERE (name LIKE :word OR kana LIKE :word2) AND branch_id = :branch_id AND delete_flg IS NULL";
-        $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);    
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-        $employees->execute();
+    $conditions[] = "e.branch_id = :branch_id";
+}
+// 削除フラグがNULLの条件
+$conditions[] = "e.delete_flg IS NULL";
 
-        $search_count = $employees->rowCount();
+// 条件を結合して基本クエリを構築
+$base_sql = "SELECT e.*, b.branch_name 
+FROM employees AS e 
+INNER JOIN branches AS b 
+ON e.branch_id = b.id 
+WHERE " . implode(" AND ", $conditions);
 
-        $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-        INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE (e.name LIKE :word OR e.kana LIKE :word2) AND e.branch_id = :branch_id AND e.delete_flg IS NULL LIMIT {$start},5";
+// ここでは検索結果と件数を取得
+$employees = $pdo->prepare($base_sql);
 
-        $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-        $employees->execute();
+// 事前にバインドするパラメータを初期化
+$params = [];
 
-    } elseif ($search_sex !== "" && $name === "") {
-        $base_sql = "SELECT * FROM `employees` WHERE sex = :sex AND branch_id = :branch_id AND delete_flg IS NULL";
-        $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-        $employees->execute();
-
-        $search_count = $employees->rowCount();
-
-        $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-        INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE sex = :sex AND branch_id = :branch_id AND delete_flg IS NULL LIMIT {$start},5";
-        
-        $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_STR);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_STR);
-        $employees->execute();
-
-    } elseif ($name !== "" && $search_sex !== "") {
-        $base_sql = "SELECT * FROM `employees` 
-                    WHERE ((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id AND delete_flg IS NULL";
-        $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_INT);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
-        $employees->execute();
-
-        $search_count = $employees->rowCount();
-        
-        $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-        INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE (((name LIKE :word OR kana LIKE :word2) AND sex = :sex) AND branch_id = :branch_id) AND delete_flg IS NULL LIMIT {$start},5";
-
-        $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':word',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':word2',"%{$name}%",PDO::PARAM_STR);
-        $employees->bindValue(':sex',$search_sex,PDO::PARAM_INT);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
-        $employees->execute();
-
-    } else {
-        $base_sql = "SELECT * FROM `employees` WHERE branch_id = :branch_id AND delete_flg IS NULL";
-        $employees = $pdo->prepare($base_sql);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
-        $employees->execute();
-
-        $employeeData = $employees->fetchAll(PDO::FETCH_ASSOC);
-        $search_count = count($employeeData);
-
-        $limit_sql = "SELECT e.*, b.branch_name FROM employees AS e 
-        INNER JOIN branches AS b ON e.branch_id = b.id 
-        WHERE e.branch_id = :branch_id AND e.delete_flg IS NULL LIMIT {$start},5";
-
-        $employees = $pdo->prepare($limit_sql);
-        $employees->bindValue(':branch_id',$search_branch,PDO::PARAM_INT);
-        $employees->execute();
-    }
+// 名前の検索条件
+if ($name) {
+    $params[':word'] = "%{$name}%";
+    $params[':word2'] = "%{$name}%";
+}
+// 性別の検索条件
+if ($search_sex) {
+    $params[':sex'] = $search_sex;
+}
+// 支店の検索条件
+if ($search_branch) {
+    $params[':branch_id'] = $search_branch;
 }
 
+// SQL クエリを実行
+if (empty($params)) {
+    // すべての条件が空の場合
+    $employees->execute();
+} else {
+    // 1つ以上の条件がある場合
+    $employees->execute($params);
 }
 
-require_once('page_gene_search.php');
+$search_count = $employees->rowCount();
 
-}catch(PDOException $e) {
-    echo $e->getMessage();
+// ここでは上記で取得したデータを５件のみの表示にする
+$limit_sql = $base_sql . " LIMIT {$start},5";
+
+$employees = $pdo->prepare($limit_sql);
+
+// 事前にバインドするパラメータを初期化
+$params = [];
+
+// 名前の検索条件
+if ($name) {
+    $params[':word'] = "%{$name}%";
+    $params[':word2'] = "%{$name}%";
 }
+// 性別の検索条件
+if ($search_sex) {
+    $params[':sex'] = $search_sex;
+}
+// 支店の検索条件
+if ($search_branch) {
+    $params[':branch_id'] = $search_branch;
+}
+
+// SQL クエリを実行
+if (empty($params)) {
+    // すべての条件が空の場合
+    $employees->execute();
+} else {
+    // 1つ以上の条件がある場合
+    $employees->execute($params);
+}
+
+$employees = $employees->fetchAll(PDO::FETCH_ASSOC);
+$employees = array_map(function ($employee) {
+    return new Employee($employee);
+}, $employees);
+
+include(__DIR__ . '/pagenation/page_gene_search.php');
+
 $sexCotegory = [
     ['value' => '', 'text' => '全て'],
-    ['value' => '1', 'text' => '男'],
-    ['value' => '2', 'text' => '女'],
-    ['value' => '3', 'text' => '不明'],
+    ['value' => 1, 'text' => '男'],
+    ['value' => 2, 'text' => '女'],
+    ['value' => 3, 'text' => '不明'],
 ];
 
-require_once('branch_get.php');
-
-$pdo = null;
-
-?>
-<?php require_once('header.html'); ?>
-
-<?php require_once('menu.php');?>
-
-<header>
-    <h1>社員一覧</h1>
-</header>
-<main>
-    <div class="search">
-        <form action="" method="get">
-            <label for="">氏名</label>
-                <input type="text" name="search_name" class="input_name" value="<?php  echo $name ?>">
-            <label for="">性別</label>
-                <select name="search_sex" class="select_sex" value="">
-                    <?php 
-                        foreach ($sexCotegory as $row){
-                            if ($search_sex == $row['value']) {
-                                echo '<option value="'. $row['value'] . '"selected>' . $row['text'] . '</option>';
-                            } else {
-                                echo '<option value="'. $row['value'] . '">' . $row['text'] . '</option>';
-                            }
-                        }
-                    ?>
-                </select>
-            <label for="">支店</label>
-                <select name="search_branch" class="select_branch" >
-
-                        <option value="">全て</option>
-
-                        <?php 
-                            foreach ($branch_row as $branch_name_search){
-                                if ($search_branch == $branch_name_search['id']) {
-                                    echo '<option value="'. $branch_name_search['id'] .'"selected>' . $branch_name_search['branch_name'] . '</option>';
-                                } else {
-                                    echo '<option value="'. $branch_name_search['id'] .'">' . $branch_name_search['branch_name'] . '</option>';
-                                }
-                            }
-                        ?>
-                </select>
-            <input type="submit" name="search_submit" value="検索" class="search_submit">
-
-            <input type="submit" name="csv_submit" value="CSVダウンロード" class="csv_submit">
-            
-            <a href="csv_import.php"><input type="button" name="csv_import" value="CSVインポート" class="csv_submit"></a>
-
-        </form>
-    </div>
-
-    <?php if ($search_count == 0): ?>
-        <p class="search_none">該当する社員がいません</p>
-    <?php else: ?>
-        <table>
-            <tr class="table_title">
-                <th>氏名</th>
-                <th>かな</th>
-                <th>支店</th>
-                <th>性別</th>
-                <th>年齢</th>
-                <th>生年月日</th>
-                <th> </th>
-            </tr>
-
-            <?php require_once('escape.php'); ?>
-            
-        </table>
-    <?php endif; ?>
-
-<!-- 検索結果が５件未満の場合ページネーションを表示させない -->
-<?php if ($search_count > 5): ?>
-
-    <?php require_once('page_display_search.php'); ?>
-
-<?php endif; ?>
-
-</main>
-</body>
-</html>
+include(__DIR__ . '/utilities/branch_sql.php');
+include(__DIR__ . '/pages/employee-search.view.php');

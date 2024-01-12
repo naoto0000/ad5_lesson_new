@@ -1,13 +1,9 @@
-
 <?php
-
 require_once('function.php');
-
 require_once('not_login.php');
+include(__DIR__ . '/utilities/quali_get.php');
 
-require_once('quali_get.php');
-
-if ($_POST['quali_submit']) {
+if (isset($_POST['quali_submit'])) {
     if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
 
         // 新規登録の場合
@@ -16,15 +12,15 @@ if ($_POST['quali_submit']) {
                 
             try{
             $quali_stmt = $pdo->prepare($quali_insert_sql);
-            $quali_stmt->bindValue(':quali_name',$_POST['quali_new'],PDO::PARAM_STR);
-            $quali_stmt->execute();
+            $quali_stmt->execute([
+                ':quali_name' => $_POST['quali_new']
+            ]);
 
-            echo "登録しました";
+            $_SESSION['message'] = 1;
 
             }catch(PDOException $e){
             echo $e->getMessage();
             }
-
         } 
 
         $qualis = $_POST['quali'];
@@ -46,14 +42,15 @@ if ($_POST['quali_submit']) {
                     $quali_id = htmlspecialchars($quali['id'], ENT_QUOTES);
             
                     $delete_sql = 
-                    "UPDATE employees SET quali = TRIM(BOTH ',' FROM REPLACE (CONCAT (',' , quali , ',' ), ',$quali_id,' , ',')) WHERE quali LIKE '%$quali_id%' AND delete_flg IS NULL";
+                    "UPDATE employees SET quali = TRIM(BOTH ',' FROM REPLACE (CONCAT (',' , quali , ',' ), ',$quali_id,' , ',')) 
+                    WHERE quali LIKE '%$quali_id%' AND delete_flg IS NULL";
             
                     $delete_stmt = $pdo->prepare($delete_sql);
                     $delete_stmt->execute();
         
                     $pdo->commit();
 
-                    echo "削除しました";
+                    $_SESSION['message'] = 1;
             
                 } catch(Exception $e){
                     $pdo->rollBack();
@@ -69,7 +66,7 @@ if ($_POST['quali_submit']) {
                 $quali_edit_stmt->bindValue(':quali_name',$quali['quali_name'],PDO::PARAM_STR);
                 $quali_edit_stmt->execute();
             
-                // echo "更新しました";
+                $_SESSION['message'] = 1;
         
                 }catch(PDOException $e){
                 echo $e->getMessage();
@@ -79,51 +76,13 @@ if ($_POST['quali_submit']) {
     }
 }
 
+// 編集メッセージ表示
+if (isset($_SESSION['message']) && $_SESSION['message'] === 1) {
+    echo "更新しました";
+    $_SESSION['message'] = "";
+}
+
 //トークンをセッション変数にセット
 $_SESSION["token"] = $token = mt_rand();
-?>
 
-<?php require_once('header.html'); ?>
-
-<?php require_once('menu.php');?>
-
-<header>
-    <h1>資格マスタ</h1>
-</header>
-
-<main>
-
-    <form action="" method="post">
-
-        <div class="quali">
-            <table class="quali_table">
-                <tr class="table_title">
-                    <th class="table_id">ID</th>
-                    <th class="quali_table_name">資格名</th>
-                </tr>
-
-            <?php foreach ($quali_masta as $index => $quali) : ?>
-                <tr class="table_contents  quali_title">
-                    <input type="hidden" name="quali[<?php echo $index ?>][id]" value="<?php echo $quali['id']; ?>">
-                    <td class="table_id quali_id"><?php echo $quali['id']; ?></td>
-                    <td class="quali_table_name"><input type="text" name="quali[<?php echo $index ?>][quali_name]" value="<?php echo $quali['quali_name']; ?>" class="quali_input"></td>
-                </tr>
-            <?php endforeach ; ?>
-
-                <tr class="table_contents  quali_title">
-                    <td class="table_id quali_id"></td>
-                    <td class="quali_table_name"><input type="text" name="quali_new" value="" class="quali_input"></td>
-                </tr>
-
-            </table>
-        </div>
-
-        <input type="hidden" name="token" value="<?php echo $token;?>">
-
-        <input type="submit" name="quali_submit" value="保存" class="regi_submit quali_submit">
-
-    </form>    
-
-</main>
-</body>
-</html>
+include(__DIR__ . '/pages/quali.view.php');

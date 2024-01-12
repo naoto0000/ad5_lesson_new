@@ -1,4 +1,3 @@
-
 <?php
 $max_page = ceil($count['cnt'] / 5);
 

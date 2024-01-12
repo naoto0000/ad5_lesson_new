@@ -38,11 +38,9 @@ if ($edit_row === false) {
     $quali_id = $edit_row['quali'];
 }
 
-require_once('branch_get.php');
-
-require_once('quali_get.php');
-
-require_once('blood_category.php');
+include(__DIR__ . '/utilities/branch_sql.php');
+include(__DIR__ . '/utilities/quali_get.php');
+include(__DIR__ . '/utilities/blood_category.php');
 
 if (isset($_POST['edit_submit'])) {
 
@@ -50,16 +48,16 @@ if (isset($_POST['edit_submit'])) {
     {
         $_SESSION['validation_errors'] = [];
         if ($post_data['edit_name'] === "") {
-            $_SESSION['validation_errors']['edit_name'] = true;
+            $_SESSION['validation_errors']['name'] = true;
         }
         if ($post_data['edit_kana'] === "") {
-            $_SESSION['validation_errors']['edit_kana'] = true;
+            $_SESSION['validation_errors']['kana'] = true;
         }
         if ($post_data['edit_branch'] === "") {
-            $_SESSION['validation_errors']['edit_branch'] = true;
+            $_SESSION['validation_errors']['branch'] = true;
         }
         if ($post_data['edit_mail'] === "") {
-            $_SESSION['validation_errors']['edit_mail'] = true;
+            $_SESSION['validation_errors']['mail'] = true;
         }
 
         $mail_result = preg_match("/^([a-zA-Z0-9])+([a-zA-Z0-9\._-])*@([a-zA-Z0-9_-])+([a-zA-Z0-9\._-]+)+$/", $post_data['edit_mail']);
@@ -67,50 +65,58 @@ if (isset($_POST['edit_submit'])) {
             $_SESSION['validation_errors']['mail_check'] = true;
         }
 
-        require_once('mail_sql.php');
+        include(__DIR__ . '/utilities/mail_sql.php');
         // メールアドレスが他の従業員とかぶっていないかチェック
         foreach ($mail_match_row as $mail_match) {
             if ($mail_match['email'] == $post_data['edit_mail']) {
                 $mail_match_result = 1;
             }
         }
+        // 関数外で記載の既存データを取得
+        global $email;
         // メールアドレスを変えずに送信しても大丈夫にしてる
-        if ($email == $_POST['edit_mail']) {
+        if ($email == $post_data['edit_mail']) {
             $mail_match_result = "";
         }
-        if ($mail_match_result === 0) {
+        if ($mail_match_result === 1) {
             $_SESSION['validation_errors']['mail_match'] = true;
         }
-        $pass_result = preg_match('/^[a-zA-Z0-9]{8,}$/', ($post_data['edit_pass']));
-        if ($pass_result === 0) {
-            $_SESSION['validation_errors']['pass_check'] = true;
+
+        // パスワードが入力されていた場合のみ、パスワードのチェックを行う
+        if ($post_data['edit_pass'] !== "") {
+            $pass_result = preg_match('/^[a-zA-Z0-9]{8,}$/', ($post_data['edit_pass']));
+            if ($pass_result === 0) {
+                $_SESSION['validation_errors']['pass_check'] = true;
+            }    
         }
+
         if ($post_data['edit_blood'] === "") {
-            $_SESSION['validation_errors']['edit_blood'] = true;
+            $_SESSION['validation_errors']['blood'] = true;
         }
     }
-}
 
-// 資格をカンマ区切りに変換
-$quali = implode(',', $_POST['edit_quali']);
+    validate($_POST);    
 
-// 生年月日を空で送信した時の処理
-if ($_POST['edit_birth'] === "") {
-    $_POST['edit_birth'] = null;
-}
+    $quali = "";
+    if (isset($_POST['edit_quali'])) {
+        // 資格をカンマ区切りに変換
+        $quali = implode(',', $_POST['edit_quali']);
+    }    
 
-$edit_com_int = (int)$_POST['edit_com'];
+    // 生年月日を空で送信した時の処理
+    if ($_POST['edit_birth'] === "") {
+        $_POST['edit_birth'] = null;
+    }
 
-// パスワードのハッシュ化
-$hashed_pass = password_hash($_POST['edit_pass'], PASSWORD_DEFAULT);
+    $edit_com_int = (int)$_POST['edit_com'];
 
-// POSTされたトークンとセッション変数のトークンの比較
-if (isset($_POST['edit_submit'])) {
+    // パスワードのハッシュ化
+    $hashed_pass = password_hash($_POST['edit_pass'], PASSWORD_DEFAULT);
+
     // パスワードの入力有無の判定
     if ($_POST['edit_pass'] !== "") {
-        if ($_POST['edit_name'] !== "" && $_POST['edit_kana'] !== "" && $_POST['edit_branch'] !== "" && $_POST['edit_mail'] !== "" && isset($_POST['edit_blood']) && $mail_result == 1 && $mail_match_result !== 1 && $pass_result == 1) {
+        if (count($_SESSION['validation_errors']) === 0) {
             if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
-                if (is_int($edit_com_int) == true && $edit_com_int > 0) {
                     $sql = "UPDATE employees 
                     SET name = :name, kana = :kana, sex = :sex, birthdate = :birthdate, 
                         email = :email, password = :password, comm_time = :comm_time, blood_type = :blood_type, married = :married, branch_id = :branch_id, quali = :quali
@@ -118,20 +124,20 @@ if (isset($_POST['edit_submit'])) {
 
                     try {
                         $stmt = $pdo->prepare($sql);
-                        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-                        $stmt->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
-                        $stmt->bindValue(':kana', $_POST['edit_kana'], PDO::PARAM_STR);
-                        $stmt->bindValue(':sex', $_POST['edit_sex'], PDO::PARAM_INT);
-                        $stmt->bindValue(':birthdate', $_POST['edit_birth'], PDO::PARAM_STR);
-                        $stmt->bindValue(':email', $_POST['edit_mail'], PDO::PARAM_STR);
-                        $stmt->bindValue(':password', $hashed_pass, PDO::PARAM_STR);
-                        $stmt->bindValue(':comm_time', $_POST['edit_com'], PDO::PARAM_INT);
-                        $stmt->bindValue(':blood_type', $_POST['edit_blood'], PDO::PARAM_INT);
-                        $stmt->bindValue(':married', $_POST['edit_married'], PDO::PARAM_INT);
-                        $stmt->bindValue(':branch_id', $_POST['edit_branch'], PDO::PARAM_INT);
-                        $stmt->bindValue(':quali', $quali, PDO::PARAM_STR);
-
-                        $stmt->execute();
+                        $stmt->execute([
+                            ':id' => $id,
+                            ':name' => $_POST['edit_name'],
+                            ':kana' => $_POST['edit_kana'],
+                            ':sex' => $_POST['edit_sex'],
+                            ':birthdate' => $_POST['edit_birth'],
+                            ':email' => $_POST['edit_mail'],
+                            ':password' => $hashed_pass,
+                            ':comm_time' => $_POST['edit_com'],
+                            ':blood_type' => $_POST['edit_blood'],
+                            ':married' => $_POST['edit_married'],
+                            ':branch_id' => $_POST['edit_branch'],
+                            ':quali' => $quali
+                            ]);
 
                         // TODO sessionに格納
                         $_SESSION['message'] = 1;
@@ -140,13 +146,12 @@ if (isset($_POST['edit_submit'])) {
                     } catch (PDOException $e) {
                         echo $e->getMessage();
                     }
-                }
             }
         } else {
             echo "ERROR：不正な登録処理です";
         }
     } else {
-        if ($_POST['edit_name'] !== "" && $_POST['edit_kana'] !== "" && $_POST['edit_branch'] !== "" && $_POST['edit_mail'] !== "" && isset($_POST['edit_blood']) && $mail_result == 1 && $mail_match_result !== 1) {
+        if (count($_SESSION['validation_errors']) === 0) {
             if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
 
                 $sql = "UPDATE employees 
@@ -156,19 +161,19 @@ if (isset($_POST['edit_submit'])) {
 
                 try {
                     $stmt = $pdo->prepare($sql);
-                    $stmt->bindValue(':id', $id, PDO::PARAM_INT);
-                    $stmt->bindValue(':name', $_POST['name'], PDO::PARAM_STR);
-                    $stmt->bindValue(':kana', $_POST['kana'], PDO::PARAM_STR);
-                    $stmt->bindValue(':sex', $_POST['edit_sex'], PDO::PARAM_INT);
-                    $stmt->bindValue(':birthdate', $_POST['edit_birth'], PDO::PARAM_STR);
-                    $stmt->bindValue(':email', $_POST['edit_mail'], PDO::PARAM_STR);
-                    $stmt->bindValue(':comm_time', $_POST['edit_com'], PDO::PARAM_INT);
-                    $stmt->bindValue(':blood_type', $_POST['edit_blood'], PDO::PARAM_INT);
-                    $stmt->bindValue(':married', $_POST['edit_married'], PDO::PARAM_INT);
-                    $stmt->bindValue(':branch_id', $_POST['edit_branch'], PDO::PARAM_INT);
-                    $stmt->bindValue(':quali', $quali, PDO::PARAM_STR);
-
-                    $stmt->execute();
+                    $stmt->execute([
+                        ':id' => $id,
+                        ':name' => $_POST['edit_name'],
+                        ':kana' => $_POST['edit_kana'],
+                        ':sex' => $_POST['edit_sex'],
+                        ':birthdate' => $_POST['edit_birth'],
+                        ':email' => $_POST['edit_mail'],
+                        ':comm_time' => $_POST['edit_com'],
+                        ':blood_type' => $_POST['edit_blood'],
+                        ':married' => $_POST['edit_married'],
+                        ':branch_id' => $_POST['edit_branch'],
+                        ':quali' => $quali
+                    ]);
 
                     $_SESSION['message'] = 1;
 
@@ -190,14 +195,15 @@ $sexCotegory = [
 ];
 
 // 削除部分
-if ($_POST['delete_submit']) {
+if (isset($_POST['delete_submit'])) {
     if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
 
         $delete_sql = "UPDATE employees SET delete_flg = :delete_flg WHERE id = :id";
         $delete_stmt = $pdo->prepare($delete_sql);
-        $delete_stmt->bindParam(":id", $id);
-        $delete_stmt->bindValue(':delete_flg', 1, PDO::PARAM_STR);
-        $delete_stmt->execute();
+        $delete_stmt->execute([
+            ':id' => $id,
+            ':delete_flg' => 1
+        ]);
 
         $_SESSION['message'] = 1;
 

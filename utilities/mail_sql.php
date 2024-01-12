@@ -1,4 +1,3 @@
-
 <?php 
 try {
     $pdo = new PDO('mysql:host=localhost;dbname=ad5_new', "root", "root");

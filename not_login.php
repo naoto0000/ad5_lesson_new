@@ -1,7 +1,5 @@
-
 <?php 
-
-// lesson19 ログインしてない時の処理
+// ログインしてない時の処理
 if (empty($_SESSION['id'])) {
 
     session_start();

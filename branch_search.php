@@ -1,8 +1,5 @@
-
 <?php
-
 require_once('function.php');
-
 require_once('not_login.php');
 
 if (isset($_GET['page'])) {
@@ -16,6 +13,8 @@ if ($page > 1) {
 } else {
     $start = 0;
 }
+
+require(__DIR__ . '/entities/branch_class.php');
 
 try{
     // 入力値を取得 文字前後の空白除去&エスケープ処理
@@ -40,6 +39,10 @@ try{
         $branches = $pdo->prepare($limit_sql);
         $branches->bindValue(':word',"%{$branch_name}%",PDO::PARAM_STR);
         $branches->execute();
+        $branches = $branches->fetchAll(PDO::FETCH_ASSOC);
+        $branches = array_map(function ($branch) {
+            return new Branch($branch);
+        }, $branches);        
 
     } else {
         $branches = $pdo->prepare($base_sql);
@@ -48,65 +51,16 @@ try{
 
         $limit_sql = "SELECT * FROM `branches` ORDER BY order_list LIMIT {$start},5";
         $branches = $pdo->query($limit_sql);
+        $branches = $branches->fetchAll(PDO::FETCH_ASSOC);
+        $branches = array_map(function ($branch) {
+            return new Branch($branch);
+        }, $branches);        
     }
 
-    require_once('page_gene_search.php');
+    include(__DIR__ . '/pagenation/page_gene_search.php');
 
 }catch(PDOException $e) {
     echo $e->getMessage();
 }
 
-$sexCotegory = [
-    ['value' => '', 'text' => '全て'],
-    ['value' => '1', 'text' => '男'],
-    ['value' => '2', 'text' => '女'],
-    ['value' => '3', 'text' => '不明'],
-];
-
-$pdo = null;
-
-?>
-
-<?php require_once('header.html'); ?>
-
-<?php require_once('menu.php');?>
-
-<header>
-    <h1>支店一覧</h1>
-</header>
-<main>
-    <div class="search">
-        <form action="" method="get">
-            <label for="">支店名</label>
-                <input type="text" name="search_branch_name" class="input_branch_name" value="<?php  echo $branch_name ?>">
-
-            <input type="submit" name="search_submit" value="検索" class="search_submit">
-        </form>
-    </div>
-
-    <?php if ($search_count == 0): ?>
-        <p class="search_none">該当する社員がいません</p>
-    <?php else: ?>
-        <table class="branch_table">
-        <tr class="table_title">
-            <th>支店名</th>
-            <th>電話番号</th>
-            <th>住所</th>
-            <th></th>
-        </tr>
-
-        <?php require_once('branch_escape.php'); ?>
-        
-        </table>
-    <?php endif; ?>
-
-<!-- 検索結果が５件未満の場合ページネーションを表示させない -->
-<?php if ($search_count > 6): ?>
-
-    <?php require_once('page_display_search.php'); ?>
-
-<?php endif; ?>
-
-</main>
-</body>
-</html>
+include(__DIR__ . '/pages/branch-search.view.php');

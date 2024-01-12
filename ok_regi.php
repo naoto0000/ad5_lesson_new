@@ -1,4 +1,3 @@
-
 <?php require_once('header.html'); ?>
 
 <div class="ok_regi">

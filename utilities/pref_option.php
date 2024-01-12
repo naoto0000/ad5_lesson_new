@@ -1,4 +1,3 @@
-
 <option value="">都道府県を選択</option>
 <option value="1">北海道</option>
 <option value="2">青森県</option>

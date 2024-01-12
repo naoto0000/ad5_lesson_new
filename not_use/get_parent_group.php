@@ -1,4 +1,3 @@
-
 <?php 
 // 親部門の選択肢表示に使用
 $base_parent_sql = "SELECT * FROM `group_table`";

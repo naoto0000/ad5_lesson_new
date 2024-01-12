@@ -1,9 +1,7 @@
 <?php require_once('header.html'); ?>
-<?php require_once('menu.php'); ?>
 
-<header id="header">
-    <h1>社員登録</h1>
-    <?php include(__DIR__ . '/../utilities/navi.html'); ?>
+<header>
+    <h1>新規登録</h1>
 </header>
 
 <main>
@@ -61,9 +59,9 @@
                     <label class="regi_label">支店</label>
                     <p class="indi_mes">必須</p>
                 </div>
-
                 <select name="regi_branch" class="regi_branch">
 
+                    <!-- 入力データ保持の条件分岐 -->
                     <?php if (isset($_SESSION['validation_errors']) && is_array($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) === 0) : ?>
 
                         <option value="" selected>支店を選択</option>
@@ -76,7 +74,7 @@
 
                     <?php else : ?>
 
-                        <?php if (isset($_POST['regi_submit']) && isset($_POST['regi_branch'])) : ?>
+                        <?php if (isset($_POST['regi_branch'])) : ?>
 
                             <option value="">支店を選択</option>
 
@@ -118,9 +116,10 @@
                 <label class="regi_label">性別</label>
                 <select name="regi_sex" class="regi_sex">
 
+                    <!-- 入力データ保持の条件分岐 -->
                     <?php if (isset($_SESSION['validation_errors']) && is_array($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) === 0) : ?>
 
-                        <option value="3">選択</option>
+                        <option value="">選択</option>
                         <option value="1">男</option>
                         <option value="2">女</option>
 
@@ -236,29 +235,28 @@
                 <!-- 入力データ保持の条件分岐 -->
                 <?php if (isset($_SESSION['validation_errors']) && is_array($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) === 0) : ?>
                     <div class="regi_blood">
-
                         <div>
-                            <input type="radio" name="regi_blood" value=1 />
+                            <input type="radio" name="regi_blood" value="1" />
                             <label for="A型">A型</label>
                         </div>
 
                         <div>
-                            <input type="radio" name="regi_blood" value=2 />
+                            <input type="radio" name="regi_blood" value="2" />
                             <label for="B型">B型</label>
                         </div>
 
                         <div>
-                            <input type="radio" name="regi_blood" value=3 />
+                            <input type="radio" name="regi_blood" value="3" />
                             <label for="AB型">AB型</label>
                         </div>
 
                         <div>
-                            <input type="radio" name="regi_blood" value=4 />
+                            <input type="radio" name="regi_blood" value="4" />
                             <label for="O型">O型</label>
                         </div>
 
                         <div>
-                            <input type="radio" name="regi_blood" value=5 />
+                            <input type="radio" name="regi_blood" value="5" />
                             <label for="不明">不明</label>
                         </div>
                     </div>
@@ -318,7 +316,6 @@
                         </div>
                     <?php endif; ?>
                 <?php endif; ?>
-
             </div>
 
             <div class="regi_class">

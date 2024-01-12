@@ -1,11 +1,12 @@
-<?php 
-ini_set('log_errors','on');  //ログを取るか
-ini_set('error_log','php_error.log');  //ログの出力ファイルを指定
+<?php
+ini_set('log_errors', 'on');  //ログを取るか
+ini_set('error_log', 'php_error.log');  //ログの出力ファイルを指定
 
 // ini_set('display_errors','on');
 
 require(__DIR__ . '/utilities/htmlspecialchars.php');
 require(__DIR__ . '/utilities/error_message.php');
+require(__DIR__ . '/utilities/initialize_validation_msg.php');
 
 session_start();
 
@@ -17,4 +18,3 @@ try {
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
-?>

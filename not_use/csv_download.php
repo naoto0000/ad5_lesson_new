@@ -44,7 +44,8 @@ if ($f) {
         
 
         // 資格の処理
-        require_once('quali_get.php');
+        include(__DIR__ . '/utilities/quali_get.php');
+
 
         foreach ($quali_masta as $quali_row){
             $quoted_id = preg_quote($quali_row['id'], '/');
