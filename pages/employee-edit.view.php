@@ -24,7 +24,7 @@
                         </div>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_name'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_name'])) : ?>
                             <!-- 編集があった場合、その内容を保持 -->
                             <input type="text" name="edit_name" class="regi_name" value="<?php e($_POST['edit_name']); ?>">
                         <?php else : ?>
@@ -48,7 +48,7 @@
                             <p class="indi_mes">必須</p>
                         </div>
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_kana'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_kana'])) : ?>
                             <input type="text" name="edit_kana" class="regi_name" value="<?php e($_POST['edit_kana']); ?>">
                         <?php else : ?>
                             <input type="text" name="edit_kana" class="regi_name" value="<?php echo $kana; ?>">
@@ -73,7 +73,7 @@
                         <select name="edit_branch" class="regi_branch">
 
                             <!-- 入力データ保持の条件分岐 -->
-                            <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_branch'])) : ?>
+                            <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_branch'])) : ?>
 
                                 <option value="">支店を選択</option>
 
@@ -119,7 +119,7 @@
                         <select name="edit_sex" class="regi_sex">
 
                             <!-- 入力データ保持の条件分岐 -->
-                            <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_sex'])) : ?>
+                            <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_sex'])) : ?>
                                 <?php
                                 foreach ($sexCotegory as $row) {
                                     if ($_POST['edit_sex'] == $row['value']) {
@@ -148,7 +148,7 @@
                         <label class="regi_label">生年月日</label>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_birth'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_birth'])) : ?>
                             <input type="date" name="edit_birth" max="9999-12-31" class="regi_birth" value="<?php e($_POST['edit_birth']); ?>">
                         <?php else : ?>
                             <input type="date" name="edit_birth" max="9999-12-31" class="regi_birth" value="<?php echo $birthdate; ?>">
@@ -162,7 +162,7 @@
                         </div>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_mail'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_mail'])) : ?>
                             <input type="text" name="edit_mail" class="regi_mail" value="<?php e($_POST['edit_mail']); ?>">
                         <?php else : ?>
                             <input type="text" name="edit_mail" class="regi_mail" value="<?php echo $email; ?>">
@@ -194,7 +194,7 @@
                         </div>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_pass'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_pass'])) : ?>
                             <div class="login_pass_class">
                                 <input type="password" name="edit_pass" class="regi_pass" value="<?php e($_POST['edit_pass']); ?>">
                                 <i id="eye" class="fa-solid fa-eye"></i>
@@ -220,7 +220,7 @@
                         <label class="regi_label">通勤時間(分)</label>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_com'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_com'])) : ?>
                             <input type="number" min="1" name="edit_com" class="regi_com" value="<?php e($_POST['edit_com']); ?>">
                         <?php else : ?>
                             <?php if ($comm_time == 0) : ?>
@@ -239,7 +239,7 @@
                         </div>
 
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_blood'])) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_blood'])) : ?>
                             <div class="regi_blood">
                                 <?php
                                 foreach ($bloodCotegory as $blood) {
@@ -294,7 +294,7 @@
                     <div class="regi_class">
                         <label class="regi_label">既婚</label>
                         <!-- 入力データ保持の条件分岐 -->
-                        <?php if (count($_SESSION['validation_errors']) !== 0) : ?>
+                        <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0) : ?>
                             <?php if (isset($_POST['edit_married'])) : ?>
                                 <div>
                                     <input type="checkbox" name="edit_married" value="1" class="married_input" checked />
@@ -326,7 +326,7 @@
                         <div class="regi_quali">
 
                             <?php foreach ($quali_masta as $quali_masta_row) : ?>
-                                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_quali[]']) && in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
+                                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_quali[]']) && in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
                                     <!-- postされたデータを保持 -->
                                     <?php if (isset($_POST['edit_quali[]']) && in_array($quali_masta_row['id'], (array)$_POST['edit_quali'])) : ?>
                                         <div>

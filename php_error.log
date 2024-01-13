@@ -513,3 +513,9 @@
 [12-Dec-2023 04:22:47 UTC] PHP Parse error:  syntax error, unexpected '$mail_match_result' (T_VARIABLE) in /Applications/MAMP/htdocs/ad5_lesson_new/edit.php on line 91
 [12-Dec-2023 08:34:57 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ']' in /Applications/MAMP/htdocs/ad5_lesson_new/edit.php on line 449
 [12-Dec-2023 08:35:07 UTC] PHP Parse error:  syntax error, unexpected 'echo' (T_ECHO), expecting ']' in /Applications/MAMP/htdocs/ad5_lesson_new/edit.php on line 449
+[13-Jan-2024 06:59:31 UTC] PHP Notice:  Undefined variable: pdo in /Applications/MAMP/htdocs/EmpManageSystem/pagenation/page_get.php on line 9
+[13-Jan-2024 06:59:31 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in /Applications/MAMP/htdocs/EmpManageSystem/pagenation/page_get.php:9
+Stack trace:
+#0 /Applications/MAMP/htdocs/EmpManageSystem/index.php(8): include()
+#1 {main}
+  thrown in /Applications/MAMP/htdocs/EmpManageSystem/pagenation/page_get.php on line 9

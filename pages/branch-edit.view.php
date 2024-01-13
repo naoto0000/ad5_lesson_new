@@ -17,7 +17,7 @@
                 </div>
 
                 <!-- 入力データ保持の条件分岐 -->
-                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_branch_name'])) : ?>
+                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_branch_name'])) : ?>
                     <!-- 編集があった場合、その内容を保持 -->
                     <input type="text" name="edit_branch_name" class="regi_branch_name" value="<?php e($_POST['edit_branch_name']); ?>">
                 <?php else : ?>
@@ -43,7 +43,7 @@
 
                 <select name="pref" id="" class="regi_pref">
 
-                    <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['pref'])) : ?>
+                    <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['pref'])) : ?>
                         <?php include(__DIR__ . '/../utilities/pref_option.php'); ?>
                         <?php
                         foreach ($prefCotegory as $row) {
@@ -78,21 +78,21 @@
                 </span>
 
                 <!-- 市区町村 -->
-                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['address'])) : ?>
+                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['address'])) : ?>
                     <input type="text" name="address" placeholder="市区町村" class="regi_branch_text regi_city" value="<?php e($_POST['address']); ?>">
                 <?php else : ?>
                     <input type="text" name="address" placeholder="市区町村" class="regi_branch_text regi_city" value="<?php echo $address; ?>">
                 <?php endif; ?>
 
                 <!-- 番地 -->
-                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['address2'])) : ?>
+                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['address2'])) : ?>
                     <input type="text" name="address2" placeholder="番地" class="regi_branch_text regi_city" value="<?php e($_POST['address2']); ?>">
                 <?php else : ?>
                     <input type="text" name="address2" placeholder="番地" class="regi_branch_text regi_city" value="<?php echo $address2; ?>">
                 <?php endif; ?>
 
                 <!-- 建物名 -->
-                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['address3'])) : ?>
+                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['address3'])) : ?>
                     <input type="text" name="address3" placeholder="建物名" class="regi_branch_text regi_city" value="<?php e($_POST['address3']); ?>">
                 <?php else : ?>
                     <input type="text" name="address3" placeholder="建物名" class="regi_branch_text regi_city" value="<?php echo $address3; ?>">
@@ -107,7 +107,7 @@
                 </div>
 
                 <!-- 入力データ保持の条件分岐 -->
-                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_branch_tel'])) : ?>
+                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_branch_tel'])) : ?>
                     <input type="text" name="edit_branch_tel" class="regi_branch_text" value="<?php e($_POST['edit_branch_tel']); ?>">
                 <?php else : ?>
                     <input type="text" name="edit_branch_tel" class="regi_branch_text" value="<?php echo $tel_number; ?>">
@@ -134,7 +134,7 @@
                 </div>
 
                 <!-- 入力データ保持の条件分岐 -->
-                <?php if (count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_order'])) : ?>
+                <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_order'])) : ?>
                     <input type="text" name="edit_order" class="regi_branch_text" value="<?php e($_POST['edit_order']); ?>">
                 <?php else : ?>
                     <input type="text" name="edit_order" class="regi_branch_text" value="<?php echo $order_list; ?>">
