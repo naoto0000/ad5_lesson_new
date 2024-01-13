@@ -14,7 +14,7 @@ session_regenerate_id(true);
 
 $employees = array();
 try {
-    $pdo = new PDO('mysql:host=localhost;dbname=ad5_new', "root", "root");
+    $pdo = new PDO('mysql:host=localhost;dbname=xs010968_lesson', "xs010968_fukuoka", "fukuoka7010");
 } catch (PDOException $e) {
     echo $e->getMessage();
 }
