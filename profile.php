@@ -26,9 +26,7 @@ $prof_birthdate = str_replace("-", ".", $prof_birthdate_get);
 // 年齢
 $prof_age = floor(($now - $birthday_age) / 10000);
 
-$_POST['prof_submit'] = "";
-
-if ($_POST['prof_submit']) {
+if (isset($_POST['prof_submit'])) {
     if ($_POST['token'] !== "" && $_POST['token'] == $_SESSION["token"]) {
 
         $update_sql = "UPDATE employees SET image = :image, prof_text = :prof_text WHERE id = :id";
