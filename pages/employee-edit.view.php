@@ -23,6 +23,7 @@
                             <p class="indi_mes">必須</p>
                         </div>
 
+
                         
                         <!-- 入力データ保持の条件分岐 -->
                         <?php if (isset($_SESSION['validation_errors']) && count($_SESSION['validation_errors']) !== 0 && isset($_POST['edit_name'])) : ?>
